@@ -1,17 +1,21 @@
 package com.sm.textanalyzer.gui;
 
+import com.sm.textanalyzer.MainClass;
 import com.sm.textanalyzer.app.WordType;
 
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import java.util.Comparator;
 import java.util.List;
+import java.util.ResourceBundle;
 
 class WordTypeTableModel extends AbstractTableModel implements TableModel {
 
 	static final int SORT_NAME = 0;
 	static final int SORT_OCCURRENCE = 1;
-	
+
+	private final ResourceBundle resourceBundle = MainClass.getResourceBundle();
+
 	private List<WordType> list;
 	private final int sortingType;
 	

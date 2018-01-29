@@ -1,5 +1,6 @@
 package com.sm.textanalyzer.gui;
 
+import com.sm.textanalyzer.MainClass;
 import com.sm.textanalyzer.app.*;
 
 import javax.swing.*;
@@ -8,9 +9,11 @@ import java.io.File;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.ResourceBundle;
 
 class TabProjectPanel extends JPanel {
-	
+
+    private final ResourceBundle resourceBundle = MainClass.getResourceBundle();
 	private final AnalyzerWindow parent;
 	
 	TabProjectPanel(final AnalyzerWindow parent) {

@@ -195,10 +195,9 @@ public class AnalyzerWindow extends JFrame {
 		//////////////////////////////////////////////
 		// Menu Help
 		//////////////////////////////////////////////
-		JMenu menuHelp = new JMenu(resourceBundle.getString("help"));
-		JMenuItem menuItemAbout = new JMenuItem("About "+MainClass.APP_TITLE);
-		menuItemAbout.addActionListener(e -> showMessage("<html>"+MainClass.APP_TITLE+"<br/>"+
-                    "Version "+MainClass.APP_VERSION+"</html>"));
+		JMenu menuHelp = new JMenu(resourceBundle.getString("help")); //NON-NLS
+		JMenuItem menuItemAbout = new JMenuItem(String.format("About %s", MainClass.APP_TITLE));
+		menuItemAbout.addActionListener(e -> showMessage(String.format("<html>%s<br/>%s %s</html>", MainClass.APP_TITLE, "Version", MainClass.APP_VERSION)));
 		JMenuItem menuItemHelp = new JMenuItem("Help");
 		menuItemHelp.addActionListener(e -> {
             try {
@@ -290,7 +289,7 @@ public class AnalyzerWindow extends JFrame {
 		String string;
 		if(TextLibrary.getInstance().getProjectFile().getProjectFile()==null) {
 			// The opened project was not yet saved
-			string = resourceBundle.getString("unsaved.project");
+			string = String.format("[%s]",resourceBundle.getString("unsaved.project"));
 		}
 		else {
 			// The opened project has been saved
