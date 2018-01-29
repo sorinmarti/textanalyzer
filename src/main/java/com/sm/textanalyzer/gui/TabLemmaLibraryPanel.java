@@ -47,7 +47,7 @@ class TabLemmaLibraryPanel extends JPanel {
         });
 		pnlLemmaOptions.add(btnNewLemma);
 		
-		JButton btnReloadLemma = new JButton("Reload");
+		JButton btnReloadLemma = new JButton(resourceBundle.getString("reload"));
 		btnReloadLemma.addActionListener(e -> lemmaList.setListData( TextLibrary.getInstance().getLemmaLibraryArray() ));
 		pnlLemmaOptions.add(btnReloadLemma);
 		pnlLemmas.add( pnlLemmaOptions , BorderLayout.SOUTH);
@@ -56,9 +56,9 @@ class TabLemmaLibraryPanel extends JPanel {
 		pnlVariations.add( new JScrollPane( variationsList ), BorderLayout.CENTER);
 		
 		JPanel pnlVariationOptions = new JPanel( new FlowLayout(FlowLayout.CENTER));
-		JButton btnNewVariation = new JButton("New Variation");
+		JButton btnNewVariation = new JButton(resourceBundle.getString("new.variation"));
 		btnNewVariation.addActionListener(e -> {
-            String answer = JOptionPane.showInputDialog(TabLemmaLibraryPanel.this, "New Variation:");
+            String answer = JOptionPane.showInputDialog(TabLemmaLibraryPanel.this, resourceBundle.getString("new.variation1"));
             if(answer!=null) {
                 LemmaLibraryItem lItem = lemmaList.getSelectedValue();
                 lItem.addVariation( answer );
@@ -75,11 +75,11 @@ class TabLemmaLibraryPanel extends JPanel {
 		add( splitter , BorderLayout.CENTER);
 		
 		JPanel pnlSaveOrLoad = new JPanel( new FlowLayout(FlowLayout.RIGHT));
-		JButton btnSave = new JButton("Save Lemma Library");
+		JButton btnSave = new JButton(resourceBundle.getString("save.lemma.library"));
 		btnSave.addActionListener(e -> {
             //TODO TextLibrary.getInstance().writeLemmaList();
         });
-		JButton btnLoad = new JButton("Load Lemma Library");
+		JButton btnLoad = new JButton(resourceBundle.getString("load.lemma.library"));
 		btnLoad.addActionListener(e -> {
             //TODO TextLibrary.getInstance().readLemmaList();
         });

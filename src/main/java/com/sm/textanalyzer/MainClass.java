@@ -8,18 +8,16 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-@SuppressWarnings("ALL")
 public class MainClass {
 
 	public static final String APP_TITLE      = "Linguistic Text File Analyzer"; //NON-NLS
-	@SuppressWarnings("HardCodedStringLiteral")
-    public static final String HELP_URL       = "http://www.sorinmarti.com/de/uni";
-	public static final String APP_VERSION    = "0.2b";
+    public static final String HELP_URL       = "http://www.sorinmarti.com/de/uni"; //NON-NLS
+	public static final String APP_VERSION    = "0.2b"; //NON-NLS
 	private static ResourceBundle messages;
 
 	public static void main(String[] args) {
-        Locale currentLocale = new Locale("en", "US");
-        messages = ResourceBundle.getBundle("MessagesBundle", currentLocale);
+        Locale currentLocale = new Locale("en", "US"); //NON-NLS //NON-NLS
+        messages = ResourceBundle.getBundle("MessagesBundle", currentLocale); //NON-NLS
 
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

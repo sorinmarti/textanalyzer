@@ -60,13 +60,13 @@ class WordTypeTableModel extends AbstractTableModel implements TableModel {
 	public String getColumnName(int column) {
 		switch(column) {
 		case 0:
-			return "Type";
+			return resourceBundle.getString("type");
 		case 1:
-			return "# found";
+			return resourceBundle.getString("found");
 		case 2:
-			return "in # files";
+			return resourceBundle.getString("in.files");
 		case 3:
-			return "in Lemma lib?";
+			return resourceBundle.getString("in.lemma.lib");
 		default:
 			return super.getColumnName(column);
 		}

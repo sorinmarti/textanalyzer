@@ -32,7 +32,7 @@ class TokensListListener implements ListSelectionListener {
 		Word word = list.getSelectedValue();
 		h.removeAllHighlights();
 		try {
-			System.out.println("Highlight: "+word.getBeginIndex()+"/"+ (word.getBeginIndex()+word.getWord().length()));
+			//System.out.println("Highlight: "+word.getBeginIndex()+"/"+ (word.getBeginIndex()+word.getWord().length()));
 			h.addHighlight(word.getBeginIndex(), word.getBeginIndex()+word.getWord().length(), DefaultHighlighter.DefaultPainter);
 			 Rectangle viewRect = textAreaToHighlight.modelToView(word.getBeginIndex());
 			 textAreaToHighlight.scrollRectToVisible(viewRect);

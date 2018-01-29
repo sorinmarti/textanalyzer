@@ -12,9 +12,12 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
 import java.net.URI;
+import java.util.ResourceBundle;
 
 public class AnalyzerWindow extends JFrame {
-	
+
+	private final ResourceBundle resourceBundle = MainClass.getResourceBundle();
+
 	private JMenuItem menuItemProjectSave;
 	private JMenuItem menuItemProjectSaveAs;
 	//private JMenu mnuEdit;
@@ -27,14 +30,14 @@ public class AnalyzerWindow extends JFrame {
 	private TabLemmaLibraryPanel      lemmaPanel          = new TabLemmaLibraryPanel();
 
 	private final JFileChooser fileChooser = new JFileChooser();
-	private final FileNameExtensionFilter projectFileFilter = new FileNameExtensionFilter("Project Files", "xml");
-	final FileNameExtensionFilter lemmaFileFilter = new FileNameExtensionFilter("Lemma Library", "xml");
-	final FileNameExtensionFilter textFileFilter = new FileNameExtensionFilter("Text Files", "txt");
+	private final FileNameExtensionFilter projectFileFilter = new FileNameExtensionFilter(resourceBundle.getString("project.files"), "xml");
+	final FileNameExtensionFilter lemmaFileFilter = new FileNameExtensionFilter(resourceBundle.getString("lemma.library"), "xml");
+	final FileNameExtensionFilter textFileFilter = new FileNameExtensionFilter(resourceBundle.getString("text.files"), "txt");
 	final FileFilter folderFileFilter = new FileFilter() {
 		
 		@Override
 		public String getDescription() {
-			return "Directories";
+			return resourceBundle.getString("directories");
 		}
 		
 		@Override
@@ -61,10 +64,10 @@ public class AnalyzerWindow extends JFrame {
 		
 		contentPane.add(tabbedPane, BorderLayout.CENTER);
 
-		tabbedPane.addTab("Project",         new ImageIcon("res/img/tab_project.png"), projectPanel,        "Details concerning the opened project.");			// TAB: Project
-		tabbedPane.addTab("Complete Corpus", new ImageIcon("res/img/tab_corpus.png"),  combinedCorpusPanel, "Analysis of the opened corpus.");			// TAB: Complete Corpus
-		tabbedPane.addTab("Single Files",    new ImageIcon("res/img/tab_project.png"), singleFilesPanel,    "Shows the single corpus files analysis.");
-		tabbedPane.addTab("Lemma Library",   new ImageIcon("res/img/tab_lemmas.png"),  lemmaPanel,          "Shows the opened lemma library.");
+		tabbedPane.addTab(resourceBundle.getString("project"),         new ImageIcon("res/img/tab_project.png"), projectPanel, resourceBundle.getString("details.concerning.the.opened.project"));            // TAB: Project NON-NLS
+		tabbedPane.addTab(resourceBundle.getString("complete.corpus"), new ImageIcon("res/img/tab_corpus.png"),  combinedCorpusPanel, resourceBundle.getString("analysis.of.the.opened.corpus"));			// TAB: Complete Corpus
+		tabbedPane.addTab(resourceBundle.getString("single.files"),    new ImageIcon("res/img/tab_project.png"), singleFilesPanel, resourceBundle.getString("shows.the.single.corpus.files.analysis"));
+		tabbedPane.addTab(resourceBundle.getString("lemma.library"),   new ImageIcon("res/img/tab_lemmas.png"),  lemmaPanel, resourceBundle.getString("shows.the.opened.lemma.library"));
 		
 		fireProjectClosed();
 	}
@@ -91,12 +94,12 @@ public class AnalyzerWindow extends JFrame {
 		//////////////////////////////////////////////
 		// Menu file
 		//////////////////////////////////////////////
-		JMenu mnuFile = new JMenu("File");
-		JMenuItem menuItemProjectNew = new JMenuItem("New Project");
+		JMenu mnuFile = new JMenu(resourceBundle.getString("file"));
+		JMenuItem menuItemProjectNew = new JMenuItem(resourceBundle.getString("new.project"));
 		menuItemProjectNew.addActionListener(arg0 -> {
             if( projectIsOpen() ) {
                 // TODO Wanna save old project?
-                showMessage("A project is still open.");
+                showMessage(resourceBundle.getString("a.project.is.still.open"));
             }
             else {
                 Project project = new Project();
@@ -105,16 +108,16 @@ public class AnalyzerWindow extends JFrame {
                 fireProjectOpened();
             }
         });
-		JMenuItem menuItemProjectOpen = new JMenuItem("Open project...");
+		JMenuItem menuItemProjectOpen = new JMenuItem(resourceBundle.getString("open.project"));
 		menuItemProjectOpen.addActionListener(e -> {
-            File file = showOpenDialog("Open project", "No project file selected.", projectFileFilter, false);
+            File file = showOpenDialog(resourceBundle.getString("open.project1"), resourceBundle.getString("no.project.file.selected"), projectFileFilter, false);
 
             if( file != null) {
                 Project project;
                 try {
                     project = ProjectFileManager.readProjectFile(file);
                 } catch (Exception e1) {
-                    showMessage("The project file could not ne read.");
+                    showMessage(resourceBundle.getString("the.project.file.could.not.ne.read"));
                     return;
                 }
                 TextLibrary.getInstance().setProjectFile(project);
@@ -123,7 +126,7 @@ public class AnalyzerWindow extends JFrame {
                     try {
                         TextLibrary.getInstance().setLemmaLibrary( ProjectFileManager.readLemmaList( project.getLemmaFileName().toFile() ) );
                     } catch (Exception e1) {
-                        showMessage("The lemma library could not be read.");
+                        showMessage(resourceBundle.getString("the.lemma.library.could.not.be.read"));
                         return;
                     }
                 }
@@ -131,51 +134,51 @@ public class AnalyzerWindow extends JFrame {
                 fireProjectOpened();
             }
         });
-		menuItemProjectSave = new JMenuItem("Save project");
+		menuItemProjectSave = new JMenuItem(resourceBundle.getString("save.project"));
 		menuItemProjectSave.addActionListener(e -> {
             if(TextLibrary.getInstance().getProjectFile().getProjectFile()==null) {
-                File file = showSaveDialog("Aborted saving process.", projectFileFilter);
+                File file = showSaveDialog(resourceBundle.getString("aborted.saving.process"), projectFileFilter);
                 if(file!=null) {
                     try {
                         saveProject( file );
-                        showMessage("Project saved.");
+                        showMessage(resourceBundle.getString("project.saved"));
                         fireProjectSaved();
                     } catch (Exception e1) {
-                        showMessage("The project could not be saved.");
+                        showMessage(resourceBundle.getString("the.project.could.not.be.saved"));
                     }
                 }
             }
             else {
                 try {
                     saveProject( TextLibrary.getInstance().getProjectFile().getProjectFile() );
-                    showMessage("Project saved.");
+                    showMessage(resourceBundle.getString("project.saved"));
                     fireProjectSaved();
                 } catch (Exception e1) {
-                    showMessage("The project could not be saved.");
+                    showMessage(resourceBundle.getString("the.project.could.not.be.saved"));
                 }
 
             }
         });
 		menuItemProjectSave.setEnabled(false);
 		
-		menuItemProjectSaveAs = new JMenuItem("Save project as..");
+		menuItemProjectSaveAs = new JMenuItem(resourceBundle.getString("save.project.as"));
 		menuItemProjectSaveAs.addActionListener(e -> {
-            File file = showSaveDialog("Aborted saving process.", projectFileFilter);
+            File file = showSaveDialog(resourceBundle.getString("aborted.saving.process"), projectFileFilter);
             if(file!=null) {
                 try {
                     saveProject( file );
-                    showMessage("Project saved.");
+                    showMessage(resourceBundle.getString("project.saved"));
                     fireProjectSaved();
                 } catch (Exception e1) {
-                    showMessage("The project could not be saved.");
+                    showMessage(resourceBundle.getString("the.project.could.not.be.saved"));
                 }
             }
         });
 		menuItemProjectSaveAs.setEnabled( false );
 		
-		JMenuItem menuItemCloseApp = new JMenuItem("Exit");
+		JMenuItem menuItemCloseApp = new JMenuItem(resourceBundle.getString("exit"));
 		menuItemCloseApp.addActionListener(e -> {
-            int answer = JOptionPane.showConfirmDialog(AnalyzerWindow.this, "Do you really want to exit? Unsaved data is lost.", "Exit program", JOptionPane.YES_NO_CANCEL_OPTION);
+            int answer = JOptionPane.showConfirmDialog(AnalyzerWindow.this, resourceBundle.getString("do.you.really.want.to.exit.unsaved.data.is.lost"), resourceBundle.getString("exit.program"), JOptionPane.YES_NO_CANCEL_OPTION);
             if(answer==JOptionPane.YES_OPTION) {
                 System.exit( 0 );
             }
@@ -192,7 +195,7 @@ public class AnalyzerWindow extends JFrame {
 		//////////////////////////////////////////////
 		// Menu Help
 		//////////////////////////////////////////////
-		JMenu menuHelp = new JMenu("Help");
+		JMenu menuHelp = new JMenu(resourceBundle.getString("help"));
 		JMenuItem menuItemAbout = new JMenuItem("About "+MainClass.APP_TITLE);
 		menuItemAbout.addActionListener(e -> showMessage("<html>"+MainClass.APP_TITLE+"<br/>"+
                     "Version "+MainClass.APP_VERSION+"</html>"));
@@ -287,7 +290,7 @@ public class AnalyzerWindow extends JFrame {
 		String string;
 		if(TextLibrary.getInstance().getProjectFile().getProjectFile()==null) {
 			// The opened project was not yet saved
-			string = "[unsaved project]";
+			string = resourceBundle.getString("unsaved.project");
 		}
 		else {
 			// The opened project has been saved
@@ -344,7 +347,7 @@ public class AnalyzerWindow extends JFrame {
 	 * @return The selected File.
 	 */
 	private File showSaveDialog(String cancelMsg, FileFilter filter) {
-		fileChooser.setDialogTitle("Save project as");
+		fileChooser.setDialogTitle(resourceBundle.getString("save.project.as1"));
 		fileChooser.setFileFilter(filter);
 		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		int answer = fileChooser.showSaveDialog(AnalyzerWindow.this);

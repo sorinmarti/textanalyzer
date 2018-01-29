@@ -24,7 +24,7 @@ class TabProjectPanel extends JPanel {
 		removeAll();
 		if(project == null) {
 			setLayout( new FlowLayout(FlowLayout.CENTER) );
-			JLabel lblNoProject = new JLabel("No open project. Create or open a project to continue.");
+			JLabel lblNoProject = new JLabel(resourceBundle.getString("no.open.project.create.or.open.a.project.to.continue"));
 			add( lblNoProject );
 		}
 		else {
@@ -33,7 +33,7 @@ class TabProjectPanel extends JPanel {
 			JPanel pnlInformation = new JPanel( new FlowLayout( FlowLayout.CENTER) );
 			String txt;
 			if( project.getProjectFile()==null ) {
-				txt = "The project has not been saved yet.";
+				txt = resourceBundle.getString("the.project.has.not.been.saved.yet");
 			}
 			else {
 				txt = "Opened project: "+project.getProjectFile();
@@ -44,10 +44,10 @@ class TabProjectPanel extends JPanel {
 			
 			JPanel pnlFiles = new JPanel( new BorderLayout() );
 			final JLabel lblPath = new JLabel( "" );
-			final JButton btnDel = new JButton( "Delete path from Corpus" );
-			final JButton btnLemma = new JButton( "Load lemma library." );
+			final JButton btnDel = new JButton(resourceBundle.getString("delete.path.from.corpus"));
+			final JButton btnLemma = new JButton(resourceBundle.getString("load.lemma.library1"));
 			
-			pnlFiles.setBorder( BorderFactory.createTitledBorder("Added corpus paths") );
+			pnlFiles.setBorder( BorderFactory.createTitledBorder(resourceBundle.getString("added.corpus.paths")) );
 			JList<Path> addedPathsList = new JList<>();
 			addedPathsList.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
 			addedPathsList.setModel(new PathListModel( project.getProjectTextFiles() ));
@@ -79,7 +79,7 @@ class TabProjectPanel extends JPanel {
 			c.ipadx = 5; c.ipady = 5;
 			c.insets = new Insets(5, 5, 5, 5);
 			
-			JLabel lbl1 = new JLabel( "Path:" );
+			JLabel lbl1 = new JLabel(resourceBundle.getString("path"));
 			c.gridx = 0; c.gridy = 0; c.gridwidth = 1; c.gridheight = 1;
 			c.weightx = .4f; c.fill = GridBagConstraints.NONE;
 			c.anchor = GridBagConstraints.LINE_END;
@@ -92,15 +92,15 @@ class TabProjectPanel extends JPanel {
 			c.weightx = .6f; c.fill = GridBagConstraints.BOTH;
 			panel.add(lblPath, c);
 			
-			JButton btnAdd = new JButton( "Add new path" );
+			JButton btnAdd = new JButton(resourceBundle.getString("add.new.path"));
 			btnAdd.addActionListener(e -> {
-                File file = parent.showOpenDialog("Open corpus path", "No corpus file selected.", parent.textFileFilter, false);
+                File file = parent.showOpenDialog(resourceBundle.getString("open.corpus.path"), resourceBundle.getString("no.corpus.file.selected"), parent.textFileFilter, false);
                 if(file != null) {
                     if( !FileUtils.fileExists( file ) ) {
-                        parent.showMessage("The selected file does not exist.");
+                        parent.showMessage(resourceBundle.getString("the.selected.file.does.not.exist"));
                     }
                     else if( FileUtils.fileExistsInProjectList( TextLibrary.getInstance().getProjectFile(), file ) ) {
-                        parent.showMessage("The file already exists in the project.");
+                        parent.showMessage(resourceBundle.getString("the.file.already.exists.in.the.project"));
                     }
                     else {
                         TextLibrary.getInstance().getProjectFile().addProjectTextFile( file.toPath() );
@@ -113,14 +113,14 @@ class TabProjectPanel extends JPanel {
 			c.weightx = .4f; c.fill = GridBagConstraints.BOTH;
 			panel.add(btnAdd, c);
 			
-			JLabel lbl3 = new JLabel( "Adds a new file for analysis to the project." );
+			JLabel lbl3 = new JLabel(resourceBundle.getString("adds.a.new.file.for.analysis.to.the.project"));
 			c.gridx = 1; c.gridy = 1; c.gridwidth = 1; c.gridheight = 1;
 			c.weightx = .6f; c.fill = GridBagConstraints.BOTH;
 			panel.add(lbl3, c);
 			
-			JButton btnAddFolder = new JButton( "Add new path directory" );
+			JButton btnAddFolder = new JButton(resourceBundle.getString("add.new.path.directory"));
 			btnAddFolder.addActionListener(e -> {
-                File file = parent.showOpenDialog("Open corpus directory", "No directory selected", parent.folderFileFilter, true);
+                File file = parent.showOpenDialog(resourceBundle.getString("open.corpus.directory"), resourceBundle.getString("no.directory.selected"), parent.folderFileFilter, true);
                 if(file != null) {
                     List<Path> filesToOpen = FileUtils.collectFilenames( file.getAbsolutePath() );
                     if(filesToOpen.size()>0) {
@@ -155,7 +155,7 @@ class TabProjectPanel extends JPanel {
 			c.weightx = .4f; c.fill = GridBagConstraints.BOTH;
 			panel.add(btnAddFolder, c);
 			
-			JLabel lbl7 = new JLabel( "Adds new files for analysis." );
+			JLabel lbl7 = new JLabel(resourceBundle.getString("adds.new.files.for.analysis"));
 			c.gridx = 1; c.gridy = 2; c.gridwidth = 1; c.gridheight = 1;
 			c.weightx = .6f; c.fill = GridBagConstraints.BOTH;
 			panel.add(lbl7, c);
@@ -177,7 +177,7 @@ class TabProjectPanel extends JPanel {
 			c.weightx = .4f; c.fill = GridBagConstraints.BOTH;
 			panel.add(btnDel, c);
 			
-			JLabel lbl4 = new JLabel( "Deletes the selected path from the project." );
+			JLabel lbl4 = new JLabel(resourceBundle.getString("deletes.the.selected.path.from.the.project"));
 			c.gridx = 1; c.gridy = 3; c.gridwidth = 1; c.gridheight = 1;
 			c.weightx = .6f; c.fill = GridBagConstraints.BOTH;
 			panel.add(lbl4, c);
@@ -185,7 +185,7 @@ class TabProjectPanel extends JPanel {
 			// btn lemma
 			btnLemma.addActionListener(e -> {
                 //TODO
-                File file = parent.showOpenDialog("Load lemma library", "No library loaded.", parent.lemmaFileFilter, false);
+                File file = parent.showOpenDialog(resourceBundle.getString("load.lemma.library2"), resourceBundle.getString("no.library.loaded"), parent.lemmaFileFilter, false);
                 if(file != null) {
                     try {
                         List<LemmaLibraryItem> list = ProjectFileManager.readLemmaList( file );
@@ -193,7 +193,7 @@ class TabProjectPanel extends JPanel {
                         TextLibrary.getInstance().setLemmaLibrary( list );
                         parent.resetLemmaPanel();
                     } catch (Exception e1) {
-                        parent.showMessage("The library could not be loaded.");
+                        parent.showMessage(resourceBundle.getString("the.library.could.not.be.loaded"));
                     }
                 }
             });
@@ -201,15 +201,15 @@ class TabProjectPanel extends JPanel {
 			c.weightx = .4f; c.fill = GridBagConstraints.BOTH;
 			panel.add(btnLemma, c);
 			
-			JLabel lbl5 = new JLabel( "Loads a lemma library." );
+			JLabel lbl5 = new JLabel(resourceBundle.getString("loads.a.lemma.library"));
 			c.gridx = 1; c.gridy = 4; c.gridwidth = 1; c.gridheight = 1;
 			c.weightx = .6f; c.fill = GridBagConstraints.BOTH;
 			panel.add(lbl5, c);
 			
-			JButton btnRead = new JButton( "Analyze added paths." );
+			JButton btnRead = new JButton(resourceBundle.getString("analyze.added.paths"));
 			btnRead.addActionListener(e -> {
-                JDialog dialog = new JDialog(parent, "Loading", true);
-                JLabel lbl = new JLabel( "          Loading          ");
+                JDialog dialog = new JDialog(parent, resourceBundle.getString("loading1"), true);
+                JLabel lbl = new JLabel(resourceBundle.getString("loading"));
                 dialog.add(lbl);
                 JProgressBar bar = new JProgressBar();
                 bar.setIndeterminate(true);
@@ -233,10 +233,10 @@ class TabProjectPanel extends JPanel {
                         TextLibrary.getInstance().addFile( file );
                     }
 
-                    lbl.setText("Get merged file.");
+                    lbl.setText(resourceBundle.getString("get.merged.file"));
                     TextLibrary.getInstance().getMergedFile();
 
-                    lbl.setText("Resetting UI.");
+                    lbl.setText(resourceBundle.getString("resetting.ui"));
                     parent.resetCorpusPanels();
 
                     dialog.setVisible(false);
@@ -250,7 +250,7 @@ class TabProjectPanel extends JPanel {
 			c.weightx = .4f; c.fill = GridBagConstraints.BOTH;
 			panel.add(btnRead, c);
 			
-			JLabel lbl6 = new JLabel( "Reads the added paths and analyzes them." );
+			JLabel lbl6 = new JLabel(resourceBundle.getString("reads.the.added.paths.and.analyzes.them"));
 			c.gridx = 1; c.gridy = 5; c.gridwidth = 1; c.gridheight = 1;
 			c.weightx = .6f; c.fill = GridBagConstraints.BOTH;
 			panel.add(lbl6, c);
