@@ -1,5 +1,6 @@
 package com.sm.textanalyzer.gui;
 
+import com.sm.textanalyzer.MainClass;
 import com.sm.textanalyzer.app.*;
 
 import javax.swing.*;
@@ -8,13 +9,11 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.ResourceBundle;
 
 class FormattedFilePanel extends JPanel {
-	    
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
+    private final ResourceBundle resourceBundle = MainClass.getResourceBundle();
 	
 	private final AnalyzerWindow parent;
 	
@@ -64,21 +63,21 @@ class FormattedFilePanel extends JPanel {
 
 		JPanel pnlLemmas     = createLemmaPanel(lemmaListModel);
 		JPanel pnlNTypes     = createTablePanel(nTypesTable,     nTypesTableModel);
-		JPanel pnlNTokens    = createListPanel( "Tokens (N)",  nTokensList,     nTokensListModel, nTokensListener);
-		JPanel pnlTokens     = createListPanel( "Tokens",    tokensList,      tokensListModel,  tokensListener);
+		JPanel pnlNTokens    = createListPanel(resourceBundle.getString("tokens.n"),  nTokensList,     nTokensListModel, nTokensListener);
+		JPanel pnlTokens     = createListPanel(resourceBundle.getString("tokens"),    tokensList,      tokensListModel,  tokensListener);
 		
 		final JPopupMenu popupMenu = new JPopupMenu();
-        JMenuItem addToLemmaLibrary = new JMenuItem("Add to lemma library");
+        JMenuItem addToLemmaLibrary = new JMenuItem(resourceBundle.getString("add.to.lemma.library"));
         addToLemmaLibrary.addActionListener(e -> {
             int modelRow = nTypesTable.convertRowIndexToModel(nTypesTable.getSelectedRow());
             boolean isAlreadyPresent = (boolean)nTypesTableModel.getValueAt(modelRow, 3);
 
             if(modelRow<0) {
-                parent.showMessage("No line selected.");
+                parent.showMessage(resourceBundle.getString("no.line.selected"));
                 return;
             }
             if(isAlreadyPresent) {
-                int answer = JOptionPane.showConfirmDialog(parent, "This type is already in the lemma library. Add anyway?");
+                int answer = JOptionPane.showConfirmDialog(parent, resourceBundle.getString("this.type.is.already.in.the.lemma.library.add.anyway"));
                 if(answer!=JOptionPane.YES_OPTION) {
                     return;
                 }
@@ -148,9 +147,9 @@ class FormattedFilePanel extends JPanel {
 		JPanel optionsPanel = createTokensOptionsPanel(nTokensListModel, tokensListModel);
 		tokensPanel.add(optionsPanel);
 		
-		typeTokenPane.addTab("Lemmas", pnlLemmas);
-		typeTokenPane.addTab("Types", typesPanel);
-		typeTokenPane.addTab("Tokens", tokensPanel);
+		typeTokenPane.addTab(resourceBundle.getString("lemmas"), pnlLemmas);
+		typeTokenPane.addTab(resourceBundle.getString("types"), typesPanel);
+		typeTokenPane.addTab(resourceBundle.getString("tokens"), tokensPanel);
 		panel.add(typeTokenPane);
 		return panel;
 	}
@@ -178,9 +177,9 @@ class FormattedFilePanel extends JPanel {
         });
 		
 		JPanel lemmaListOptions = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		JButton btnSortName = new JButton("by Name");
+		JButton btnSortName = new JButton(resourceBundle.getString("by.name"));
 		btnSortName.addActionListener(e -> lemmaListModel.sortName());
-		JButton btnSortOccurrences = new JButton("by Occurrences");
+		JButton btnSortOccurrences = new JButton(resourceBundle.getString("by.occurrences"));
 		btnSortOccurrences.addActionListener(e -> lemmaListModel.sortOccurrences());
 		lemmaListOptions.add( btnSortName);
 		lemmaListOptions.add( btnSortOccurrences);
@@ -192,7 +191,7 @@ class FormattedFilePanel extends JPanel {
 		pnlLemmaTypesTable.add(new JScrollPane(lemmaTable), BorderLayout.CENTER);
 		
 		JPanel options = new JPanel(new FlowLayout());
-		JButton btn = new JButton( "Occurrences" );
+		JButton btn = new JButton(resourceBundle.getString("occurrences"));
 		btn.addActionListener(e -> {
             StringBuilder foundString = new StringBuilder();
             WordType word = lemmaTableModel.getWordTypeAt( sorter.convertRowIndexToModel(lemmaTable.getSelectedRow()) );
@@ -214,14 +213,14 @@ class FormattedFilePanel extends JPanel {
 
 	private JPanel createTokensOptionsPanel(WordListModel nTokensListModel, WordListModel tokensListModel) {
 		JPanel optionsPanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
-		optionsPanel.setBorder(BorderFactory.createTitledBorder("Options"));
+		optionsPanel.setBorder(BorderFactory.createTitledBorder(resourceBundle.getString("options")));
 		
-		JButton btnSort1 = new JButton("Original order.");
+		JButton btnSort1 = new JButton(resourceBundle.getString("original.order"));
 		btnSort1.addActionListener(e -> {
             nTokensListModel.sortOriginal();
             tokensListModel.sortOriginal();
         });
-		JButton btnSort2 = new JButton("Alphabetical");
+		JButton btnSort2 = new JButton(resourceBundle.getString("alphabetical"));
 		btnSort2.addActionListener(e -> {
             nTokensListModel.sortName();
             tokensListModel.sortName();
@@ -236,9 +235,9 @@ class FormattedFilePanel extends JPanel {
 	private JPanel initializeTextAndResultPanel() {
 		JPanel panel = new JPanel(new GridLayout(1, 0));
 		
-		JPanel pnlOriginalText = createTextAreaPanel("Original source", originalTextArea, file.getText() );
-		JPanel pnlCleanText    = createTextAreaPanel("Normalized source", cleanTextArea, file.getCleanText() );
-		JPanel pnlSearchResult = createTextAreaPanel("Search results", resultTextArea, "");
+		JPanel pnlOriginalText = createTextAreaPanel(resourceBundle.getString("original.source"), originalTextArea, file.getText() );
+		JPanel pnlCleanText    = createTextAreaPanel(resourceBundle.getString("normalized.source"), cleanTextArea, file.getCleanText() );
+		JPanel pnlSearchResult = createTextAreaPanel(resourceBundle.getString("search.results"), resultTextArea, "");
 		
 		panel.add(pnlOriginalText);
 		panel.add(pnlCleanText);
@@ -303,14 +302,14 @@ class FormattedFilePanel extends JPanel {
 
 	private JPanel createTablePanel(JTable table, WordTypeTableModel tableModel) {
 		JPanel panel = new JPanel(new BorderLayout());
-		panel.setBorder(BorderFactory.createTitledBorder("Types"));
+		panel.setBorder(BorderFactory.createTitledBorder(resourceBundle.getString("types")));
 		
 		table.setModel(tableModel);
 		TableRowSorter<TableModel> sorter = new TableRowSorter<>(tableModel);
 		table.setRowSorter(sorter);
 		
 		JTextField txtSearch = new JTextField(10);
-		JCheckBox chkOnlyNonLemmas = new JCheckBox("Only entries without lemma.");
+		JCheckBox chkOnlyNonLemmas = new JCheckBox(resourceBundle.getString("only.entries.without.lemma"));
 		txtSearch.getDocument().addDocumentListener(new DocumentListener() {
 		    
 			private void performSearch() {
@@ -341,7 +340,7 @@ class FormattedFilePanel extends JPanel {
 		panel.add(new JScrollPane( table ), BorderLayout.CENTER);
 		
 		JPanel options = new JPanel(new FlowLayout());
-		JButton btn = new JButton( "Occurrences" );
+		JButton btn = new JButton(resourceBundle.getString("occurrences"));
 		JTextField tokensBefore = new JTextField("3",5);
 		JTextField tokensAfter = new JTextField("3", 5);
 		btn.addActionListener(e -> {
@@ -356,13 +355,13 @@ class FormattedFilePanel extends JPanel {
         });
 		options.add(btn);
 		
-		options.add(new JLabel("Search"));
+		options.add(new JLabel(resourceBundle.getString("search")));
 		options.add(txtSearch);
 		options.add(new JLabel("     "));
 		options.add(btn);
-		options.add(new JLabel("Before:"));
+		options.add(new JLabel(resourceBundle.getString("before")));
 		options.add(tokensBefore);
-		options.add(new JLabel("After:"));
+		options.add(new JLabel(resourceBundle.getString("after")));
 		options.add(tokensAfter);
 		options.add(chkOnlyNonLemmas);
 		panel.add(options, BorderLayout.SOUTH);
@@ -371,7 +370,7 @@ class FormattedFilePanel extends JPanel {
 
 	private JPanel createTablePanel(JTable table, TableModel tableModel) {
 		JPanel panel = new JPanel(new BorderLayout());
-		panel.setBorder(BorderFactory.createTitledBorder("Statistics"));
+		panel.setBorder(BorderFactory.createTitledBorder(resourceBundle.getString("statistics")));
 		
 		table.setModel(tableModel);
 		panel.add(new JScrollPane( table ), BorderLayout.CENTER);

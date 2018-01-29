@@ -8,7 +8,7 @@ public class WordTest {
 
     @Test
     public void testCreation() {
-        Word word = new Word("word");
+        Word word = new Word("word"); //NON-NLS
         assertEquals("word", word.getWord());
     }
 }

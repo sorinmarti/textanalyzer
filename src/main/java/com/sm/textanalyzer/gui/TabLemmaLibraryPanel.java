@@ -1,12 +1,16 @@
 package com.sm.textanalyzer.gui;
 
+import com.sm.textanalyzer.MainClass;
 import com.sm.textanalyzer.app.LemmaLibraryItem;
 import com.sm.textanalyzer.app.TextLibrary;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ResourceBundle;
 
 class TabLemmaLibraryPanel extends JPanel {
+
+    private final ResourceBundle resourceBundle = MainClass.getResourceBundle();
 
 	TabLemmaLibraryPanel() {
 		setLayout(new BorderLayout());
@@ -31,9 +35,9 @@ class TabLemmaLibraryPanel extends JPanel {
 		pnlLemmas.add( new JScrollPane(lemmaList) , BorderLayout.CENTER);
 		
 		JPanel pnlLemmaOptions = new JPanel( new FlowLayout(FlowLayout.CENTER));
-		JButton btnNewLemma = new JButton("New Lemma");
+		JButton btnNewLemma = new JButton(resourceBundle.getString("new.lemma"));
 		btnNewLemma.addActionListener(e -> {
-            String answer = JOptionPane.showInputDialog(TabLemmaLibraryPanel.this, "Lemma Name:");
+            String answer = JOptionPane.showInputDialog(TabLemmaLibraryPanel.this, resourceBundle.getString("lemma.name"));
             if(answer!=null) {
                 LemmaLibraryItem lItem = new LemmaLibraryItem(answer);
                 TextLibrary.getInstance().addLemmaItem( lItem );

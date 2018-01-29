@@ -1,13 +1,13 @@
 package com.sm.textanalyzer.app;
 
+import com.sm.textanalyzer.MainClass;
+
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class TextLibrary {
 
+	private final ResourceBundle resourceBundle = MainClass.getResourceBundle();
 	private Project projectFile = null;
 	
 	private static TextLibrary instance = null;
@@ -139,22 +139,22 @@ public class TextLibrary {
 			FormattedFile mostChars = getMostChars();
 			FormattedFile leastChars = getLeastChars();
 			
-			return new String[][]{ {"Number of files",                   String.valueOf(  getNumFiles() )},
-								 {"Number of types",                     String.valueOf( merged.getCleanTypes().size())},
-								 {"Number of tokens",                    String.valueOf( merged.getTokens().size() )},
-					             {"Type/Token ratio",                 String.valueOf( merged.getTypeTokenRatio() )},
-					             {"Longest text (Token)",            String.valueOf( mostTokens.getFilename()+ " ("+mostTokens.getNumTokens()+")" )},
-					             {"Shortest text (Token)",           String.valueOf( leastTokens.getFilename()+ " ("+leastTokens.getNumTokens()+")" )},
-					             {"Average text length (Tokens)",  String.valueOf( getAverageTokens() )},
-					             {"Median text length (Tokens)",        String.valueOf( getMedianTokens() )},
-					             {"Longest Text (Characters)",          String.valueOf( mostChars.getFilename()+ " ("+mostChars.getText().length()+")" )},
-					             {"Shortest Text (Characters)",         String.valueOf( leastChars.getFilename()+ " ("+leastChars.getText().length()+")" )},
-					             {"Average text length (Characters)", String.valueOf( getAverageChars() )},
-					             {"Median text length (Characters)",       String.valueOf( getMedianChars() )},
-					             {"Number of lemmas",                   String.valueOf( getLemmaLibrary().size() )},
-					             {"Number of types in lemmas",          String.valueOf( getNumberOfLemmaTypes() )},
-					             {"Lemmas with one type only",       String.valueOf( getNumberOfLemmasWithOnlyOneType() )},
-					             {"Lemmas without type",               String.valueOf( getNumberOfLemmasWithNoType() )}
+			return new String[][]{ {resourceBundle.getString("number.of.files"),                   String.valueOf(  getNumFiles() )},
+								 {resourceBundle.getString("number.of.types"),                     String.valueOf( merged.getCleanTypes().size())},
+								 {resourceBundle.getString("number.of.tokens"),                    String.valueOf( merged.getTokens().size() )},
+					             {resourceBundle.getString("type.token.ratio"),                 String.valueOf( merged.getTypeTokenRatio() )},
+					             {resourceBundle.getString("longest.text.token"),            String.valueOf( mostTokens.getFilename()+ " ("+mostTokens.getNumTokens()+")" )},
+					             {resourceBundle.getString("shortest.text.token"),           String.valueOf( leastTokens.getFilename()+ " ("+leastTokens.getNumTokens()+")" )},
+					             {resourceBundle.getString("average.text.length.tokens"),  String.valueOf( getAverageTokens() )},
+					             {resourceBundle.getString("median.text.length.tokens"),        String.valueOf( getMedianTokens() )},
+					             {resourceBundle.getString("longest.text.characters"),          String.valueOf( mostChars.getFilename()+ " ("+mostChars.getText().length()+")" )},
+					             {resourceBundle.getString("shortest.text.characters"),         String.valueOf( leastChars.getFilename()+ " ("+leastChars.getText().length()+")" )},
+					             {resourceBundle.getString("average.text.length.characters"), String.valueOf( getAverageChars() )},
+					             {resourceBundle.getString("median.text.length.characters"),       String.valueOf( getMedianChars() )},
+					             {resourceBundle.getString("number.of.lemmas"),                   String.valueOf( getLemmaLibrary().size() )},
+					             {resourceBundle.getString("number.of.types.in.lemmas"),          String.valueOf( getNumberOfLemmaTypes() )},
+					             {resourceBundle.getString("lemmas.with.one.type.only"),       String.valueOf( getNumberOfLemmasWithOnlyOneType() )},
+					             {resourceBundle.getString("lemmas.without.type"),               String.valueOf( getNumberOfLemmasWithNoType() )}
 								 };
 		}
 		return new String[][]{};
