@@ -11,10 +11,4 @@ public class WordTest {
         Word word = new Word("word");
         assertEquals("word", word.getWord());
     }
-
-    @Test
-    public void failTestCreation() {
-        Word word = new Word("word");
-        assertEquals("xx", word.getWord());
-    }
 }
