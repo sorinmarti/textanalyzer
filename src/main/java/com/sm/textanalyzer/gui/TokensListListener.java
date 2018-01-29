@@ -1,23 +1,21 @@
 package com.sm.textanalyzer.gui;
 
-import java.awt.Rectangle;
+import com.sm.textanalyzer.app.Word;
 
-import javax.swing.JList;
-import javax.swing.JTextArea;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
+import java.awt.*;
 
-import com.sm.textanalyzer.app.Word;
-
-public class TokensListListener implements ListSelectionListener {
+class TokensListListener implements ListSelectionListener {
 
 	private final JList<Word> twinList;
 	private final JTextArea textAreaToHighlight;
 	
-	public TokensListListener(JList<Word> twinList, JTextArea textAreaToHighlight) {
+	TokensListListener(JList<Word> twinList, JTextArea textAreaToHighlight) {
 		this.twinList = twinList;
 		this.textAreaToHighlight = textAreaToHighlight;
 	}

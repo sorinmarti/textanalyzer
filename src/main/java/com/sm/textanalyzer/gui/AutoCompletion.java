@@ -1,29 +1,32 @@
 package com.sm.textanalyzer.gui;
 
-import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.text.*;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.JTextComponent;
+import javax.swing.text.PlainDocument;
+import java.awt.event.*;
 
 /* This work is hereby released into the Public Domain.
  * To view a copy of the public domain dedication, visit
  * http://creativecommons.org/licenses/publicdomain/
  */
-public class AutoCompletion extends PlainDocument {
-    private JComboBox comboBox;
+class AutoCompletion extends PlainDocument {
+    private final JComboBox comboBox;
     private ComboBoxModel model;
     private JTextComponent editor;
 
     // flag to indicate if setSelectedItem has been called
     // subsequent calls to remove/insertString should be ignored
     private boolean selecting=false;
-    private boolean hidePopupOnFocusLoss;
+    private final boolean hidePopupOnFocusLoss;
     private boolean hitBackspace=false;
     private boolean hitBackspaceOnSelection;
 
-    private KeyListener editorKeyListener;
-    private FocusListener editorFocusListener;
+    private final KeyListener editorKeyListener;
+    private final FocusListener editorFocusListener;
 
-    public AutoCompletion(final JComboBox comboBox) {
+    private AutoCompletion(final JComboBox comboBox) {
         this.comboBox = comboBox;
         model = comboBox.getModel();
         comboBox.addActionListener(e -> {
@@ -68,14 +71,14 @@ public class AutoCompletion extends PlainDocument {
         highlightCompletedText(0);
     }
 
-    public static void enable(JComboBox comboBox) {
+    static void enable(JComboBox comboBox) {
         // has to be editable
         comboBox.setEditable(true);
         // change the editor's document
         new AutoCompletion(comboBox);
     }
 
-    void configureEditor(ComboBoxEditor newEditor) {
+    private void configureEditor(ComboBoxEditor newEditor) {
         if (editor != null) {
             editor.removeKeyListener(editorKeyListener);
             editor.removeFocusListener(editorFocusListener);
@@ -124,7 +127,11 @@ public class AutoCompletion extends PlainDocument {
             // provide feedback to the user that his input has been received but can not be accepted
             comboBox.getToolkit().beep(); // when available use: UIManager.getLookAndFeel().provideErrorFeedback(comboBox);
         }
-        setText(item.toString());
+        if(item!=null) {
+            setText(item.toString());
+        } else {
+            setText("");
+        }
         // select the completed part
         highlightCompletedText(offs+str.length());
     }

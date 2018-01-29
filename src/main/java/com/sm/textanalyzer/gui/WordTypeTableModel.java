@@ -1,34 +1,27 @@
 package com.sm.textanalyzer.gui;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import com.sm.textanalyzer.app.WordType;
 
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
+import java.util.Comparator;
+import java.util.List;
 
-import com.sm.textanalyzer.app.WordType;
+class WordTypeTableModel extends AbstractTableModel implements TableModel {
 
-public class WordTypeTableModel extends AbstractTableModel implements TableModel {
-
-	/**
-	 * 10.12.17
-	 */
-	private static final long serialVersionUID = 7717634321321384518L;
-	public static final int SORT_NAME = 0;
-	public static final int SORT_OCCURENCE = 1;
+	static final int SORT_NAME = 0;
+	static final int SORT_OCCURRENCE = 1;
 	
 	private List<WordType> list;
-	private int sortingType;
+	private final int sortingType;
 	
-	public WordTypeTableModel(List<WordType> list, int initialSort) {
+	WordTypeTableModel(List<WordType> list, int initialSort) {
 		super();
 		
 		this.sortingType = initialSort;
 		switch(initialSort) {
-		case SORT_OCCURENCE:
-			list = sortByOccurence( list );
+		case SORT_OCCURRENCE:
+			list = sortByOccurrence( list );
 			break;
 		default:
 			list = sortByName( list );
@@ -48,21 +41,18 @@ public class WordTypeTableModel extends AbstractTableModel implements TableModel
 	}
 	
 	private static List<WordType> sortByName(List<WordType> list) {
-		Collections.sort(list, (o1, o2) -> {
-            int res = o1.getWord().compareTo(o2.getWord());
-            return res;
-        });
+		list.sort(Comparator.comparing(WordType::getWord));
 		return list;
 	}
 	
-	private static List<WordType> sortByOccurence(List<WordType> list) {
-		Collections.sort(list, (o1, o2) -> {
-            int res = o2.getNumberOfOccurences()-o1.getNumberOfOccurences();
-            if(res==0) {
-                res = o1.getWord().compareTo(o2.getWord());
-            }
-            return res;
-        });
+	private static List<WordType> sortByOccurrence(List<WordType> list) {
+		list.sort((o1, o2) -> {
+			int res = o2.getNumberOfOccurrences() - o1.getNumberOfOccurrences();
+			if (res == 0) {
+				res = o1.getWord().compareTo(o2.getWord());
+			}
+			return res;
+		});
 		return list;
 	}
 	
@@ -72,11 +62,11 @@ public class WordTypeTableModel extends AbstractTableModel implements TableModel
 		case 0:
 			return "Type";
 		case 1:
-			return "# gefunden";
+			return "# found";
 		case 2:
-			return "in # Dateien";
+			return "in # files";
 		case 3:
-			return "in Lemma-Lib?";
+			return "in Lemma lib?";
 		default:
 			return super.getColumnName(column);
 		}
@@ -99,7 +89,7 @@ public class WordTypeTableModel extends AbstractTableModel implements TableModel
 		case 0:
 			return list.get(rowIndex).getWord();
 		case 1:
-			return list.get(rowIndex).getNumberOfOccurences();
+			return list.get(rowIndex).getNumberOfOccurrences();
 		case 2:
 			return list.get(rowIndex).getNumberOfDifferentFiles();
 		case 3:
@@ -108,7 +98,7 @@ public class WordTypeTableModel extends AbstractTableModel implements TableModel
 		return "";
 	}
 
-	public WordType getWordTypeAt(int selectedRow) {
+	WordType getWordTypeAt(int selectedRow) {
 		return list.get(selectedRow);
 	}
 
@@ -117,10 +107,10 @@ public class WordTypeTableModel extends AbstractTableModel implements TableModel
 		return getValueAt(0, column).getClass();
 	}
 
-	public void setValues(List<WordType> types) {
+	void setValues(List<WordType> types) {
 		switch(sortingType) {
-		case SORT_OCCURENCE:
-			this.list = sortByOccurence( types );
+		case SORT_OCCURRENCE:
+			this.list = sortByOccurrence( types );
 			break;
 		default:
 			this.list = sortByName( types );

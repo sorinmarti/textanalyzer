@@ -1,11 +1,11 @@
 package com.sm.textanalyzer.app;
 
-public class Occurence {
+public class Occurrence {
 
-	private int file;
-	private int token;
+	private final int file;
+	private final int token;
 	
-	public Occurence(int fileNumber, int tokenNumber) {
+	Occurrence(int fileNumber, int tokenNumber) {
 		this.file = fileNumber;
 		this.token = tokenNumber;
 	}
@@ -13,16 +13,20 @@ public class Occurence {
 	public int getFile() {
 		return file;
 	}
-	
+
+	/*
 	public void setFile(int file) {
 		this.file = file;
 	}
+	*/
 	
 	public int getToken() {
 		return token;
 	}
-	
+
+	/*
 	public void setToken(int token) {
 		this.token = token;
 	}
+	*/
 }

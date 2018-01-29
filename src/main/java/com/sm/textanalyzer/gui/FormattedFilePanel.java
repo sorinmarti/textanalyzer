@@ -1,63 +1,15 @@
 package com.sm.textanalyzer.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
+import com.sm.textanalyzer.app.*;
 
-import javax.swing.BorderFactory;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.ListCellRenderer;
-import javax.swing.RowFilter;
-import javax.swing.SwingUtilities;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.PopupMenuEvent;
-import javax.swing.event.PopupMenuListener;
+import javax.swing.*;
+import javax.swing.event.*;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
+import java.awt.*;
+import java.util.ArrayList;
 
-import com.sm.textanalyzer.app.FormattedFile;
-import com.sm.textanalyzer.app.Lemma;
-import com.sm.textanalyzer.app.LemmaLibraryItem;
-import com.sm.textanalyzer.app.Occurence;
-import com.sm.textanalyzer.app.TextLibrary;
-import com.sm.textanalyzer.app.Word;
-import com.sm.textanalyzer.app.WordType;
-
-public class FormattedFilePanel extends JPanel {
-
-	RowFilter<Object, Object> lemmaFilter = new RowFilter<Object, Object>() {
-	      public boolean include(Entry entry) {
-	    	  if(entry.getValueCount()>=4) {
-	    		  if((boolean)entry.getValue(3)) {
-	    			  return false;
-	    		  }
-	    	  }
-	       return true;
-	      }
-	    };
+class FormattedFilePanel extends JPanel {
 	    
 	/**
 	 * 
@@ -67,25 +19,21 @@ public class FormattedFilePanel extends JPanel {
 	private final AnalyzerWindow parent;
 	
 	private final FormattedFile file;
-	private boolean createStatistics;
+	private final boolean createStatistics;
 	
-	JTable statisticsTable = new JTable();
-	JList<Lemma> lemmaList = new JList<>();
-	JTable lemmaTable = new JTable();
-	JTable nTypesTable = new JTable();
-	JTable typesTable = new JTable();
-	JList<Word> nTokensList = new JList<>();
-	JList<Word> tokensList = new JList<>();
-	JTextArea originalTextArea = new JTextArea();
-	JTextArea cleanTextArea = new JTextArea();
-	JTextArea resultTextArea = new JTextArea();
+	private final JTable statisticsTable = new JTable();
+    private final JList<Lemma> lemmaList = new JList<>();
+    private final JTable lemmaTable = new JTable();
+    private final JTable nTypesTable = new JTable();
+    private final JList<Word> nTokensList = new JList<>();
+    private final JList<Word> tokensList = new JList<>();
+    private final JTextArea originalTextArea = new JTextArea();
+    private final JTextArea cleanTextArea = new JTextArea();
+    private final JTextArea resultTextArea = new JTextArea();
+
+    private WordTypeTableModel lemmaTableModel = null;
 	
-	WordTypeTableModel lemmaTableModel = null;
-	
-	int lastSortCommand = 0;
-	
-	
-	public FormattedFilePanel(AnalyzerWindow parent, FormattedFile file, boolean createStatistics) {
+	FormattedFilePanel(AnalyzerWindow parent, FormattedFile file, boolean createStatistics) {
 		this.parent = parent;
 		this.file = file;
 		this.createStatistics = createStatistics;
@@ -107,34 +55,30 @@ public class FormattedFilePanel extends JPanel {
 		JPanel panel = new JPanel(new GridLayout(1,0));
 		
 		LemmaListModel lemmaListModel = new LemmaListModel( TextLibrary.getInstance().getLemmas( file ) );
-		//TableModel lemmaTableModel = new DefaultTableModel();
-		WordTypeTableModel nTypesTableModel = new WordTypeTableModel( file.getCleanTypes(), WordTypeTableModel.SORT_OCCURENCE ); 
-		//WordTypeTableModel typesTableModel = new WordTypeTableModel( file.getTypes() );
+		WordTypeTableModel nTypesTableModel = new WordTypeTableModel( file.getCleanTypes(), WordTypeTableModel.SORT_OCCURRENCE);
 		WordListModel nTokensListModel = new WordListModel( file.getCleanTokens() );
 		WordListModel tokensListModel = new WordListModel( file.getTokens() );
 		
 		ListSelectionListener nTokensListener = new TokensListListener(tokensList, cleanTextArea);
 		ListSelectionListener tokensListener = new TokensListListener(nTokensList, originalTextArea);
-		
-		
+
 		JPanel pnlLemmas     = createLemmaPanel(lemmaListModel);
-		JPanel pnlNTypes     = createTablePanel("N-Types",   nTypesTable,     nTypesTableModel);
-		//JPanel pnlTypes      = createTablePanel("Types",     typesTable,      typesTableModel);
-		JPanel pnlNTokens    = createListPanel( "N-Tokens",  nTokensList,     nTokensListModel, nTokensListener);
+		JPanel pnlNTypes     = createTablePanel(nTypesTable,     nTypesTableModel);
+		JPanel pnlNTokens    = createListPanel( "Tokens (N)",  nTokensList,     nTokensListModel, nTokensListener);
 		JPanel pnlTokens     = createListPanel( "Tokens",    tokensList,      tokensListModel,  tokensListener);
 		
 		final JPopupMenu popupMenu = new JPopupMenu();
-        JMenuItem addToLemmaLibrary = new JMenuItem("Zu Lemma-Bibliothek hinzuf�gen");
+        JMenuItem addToLemmaLibrary = new JMenuItem("Add to lemma library");
         addToLemmaLibrary.addActionListener(e -> {
             int modelRow = nTypesTable.convertRowIndexToModel(nTypesTable.getSelectedRow());
             boolean isAlreadyPresent = (boolean)nTypesTableModel.getValueAt(modelRow, 3);
 
             if(modelRow<0) {
-                parent.showMessage("Keine Zeile ausgew�hlt");
+                parent.showMessage("No line selected.");
                 return;
             }
             if(isAlreadyPresent) {
-                int answer = JOptionPane.showConfirmDialog(parent, "Dieser Type ist bereits in der Lemma-Bibliothek. Trotzdem hinzuf�gen?");
+                int answer = JOptionPane.showConfirmDialog(parent, "This type is already in the lemma library. Add anyway?");
                 if(answer!=JOptionPane.YES_OPTION) {
                     return;
                 }
@@ -149,7 +93,7 @@ public class FormattedFilePanel extends JPanel {
             JTextField newLemma = new JTextField();
             panel1.add( newLemma, BorderLayout.SOUTH );
 
-            int answer = JOptionPane.showConfirmDialog(parent, panel1, "F�gen Sie den Type '"+typeToAdd+"' zur Lemma-Bibliothek hinzu", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+            int answer = JOptionPane.showConfirmDialog(parent, panel1, "Add the type '"+typeToAdd+"' to lemma library", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
             if(answer==JOptionPane.OK_OPTION) {
                 if(!newLemma.getText().isEmpty()) {
                     LemmaLibraryItem item = new LemmaLibraryItem( newLemma.getText() );
@@ -157,7 +101,7 @@ public class FormattedFilePanel extends JPanel {
                     TextLibrary.getInstance().addLemmaItem( item );
 
                 }
-                else {	// Textfield is empty, we add to combo box item
+                else {	// Text field is empty, we add to combo box item
                     LemmaLibraryItem selected = (LemmaLibraryItem) existingLemmas.getModel().getSelectedItem();
                     selected.addVariation( typeToAdd );
                 }
@@ -188,7 +132,7 @@ public class FormattedFilePanel extends JPanel {
 		
 		if(createStatistics) {
 			TableModel statisticsTableModel = new StringArrayTableModel( TextLibrary.getInstance().getStatisticsArray() );
-			JPanel pnlStatistics = createTablePanel("Statistik", statisticsTable, statisticsTableModel);
+			JPanel pnlStatistics = createTablePanel(statisticsTable, statisticsTableModel);
 			panel.add(pnlStatistics);
 		}
 		JTabbedPane typeTokenPane = new JTabbedPane();
@@ -225,7 +169,7 @@ public class FormattedFilePanel extends JPanel {
 		lemmaList.setCellRenderer((list, value, index, isSelected, cellHasFocus) -> {
                 DefaultListCellRenderer def = new DefaultListCellRenderer();
                 JLabel renderer = (JLabel) def.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                renderer.setText( ((Lemma)value).getName());
+                renderer.setText( value.getName());
                 return renderer;
               });
 		lemmaList.addListSelectionListener(e -> {
@@ -234,12 +178,12 @@ public class FormattedFilePanel extends JPanel {
         });
 		
 		JPanel lemmaListOptions = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		JButton btnSortName = new JButton("Name");
+		JButton btnSortName = new JButton("by Name");
 		btnSortName.addActionListener(e -> lemmaListModel.sortName());
-		JButton btnSortOccurences = new JButton("Vorkommnisse");
-		btnSortOccurences.addActionListener(e -> lemmaListModel.sortOccurences());
+		JButton btnSortOccurrences = new JButton("by Occurrences");
+		btnSortOccurrences.addActionListener(e -> lemmaListModel.sortOccurrences());
 		lemmaListOptions.add( btnSortName);
-		lemmaListOptions.add( btnSortOccurences);
+		lemmaListOptions.add( btnSortOccurrences);
 		
 		pnlLemmaList.add(new JScrollPane(lemmaList), BorderLayout.CENTER);
 		pnlLemmaList.add(lemmaListOptions, BorderLayout.SOUTH);
@@ -248,16 +192,16 @@ public class FormattedFilePanel extends JPanel {
 		pnlLemmaTypesTable.add(new JScrollPane(lemmaTable), BorderLayout.CENTER);
 		
 		JPanel options = new JPanel(new FlowLayout());
-		JButton btn = new JButton( "Nachweise" );
+		JButton btn = new JButton( "Occurrences" );
 		btn.addActionListener(e -> {
-            String foundString = "";
+            StringBuilder foundString = new StringBuilder();
             WordType word = lemmaTableModel.getWordTypeAt( sorter.convertRowIndexToModel(lemmaTable.getSelectedRow()) );
-            for(Occurence o : word.getOccurences()) {
+            for(Occurrence o : word.getOccurrences()) {
                 FormattedFile file = TextLibrary.getInstance().getFile(o.getFile());
-                String s = file.getFilename().toString()+":"+ file.getContext(o.getToken(), 5, 5);
-                foundString += s + "\n";
+                String s = file.getFilename()+":"+ file.getContext(o.getToken(), 5, 5);
+                foundString.append(s).append("\n");
             }
-            resultTextArea.setText(foundString);
+            resultTextArea.setText(foundString.toString());
         });
 		options.add(btn);
 		pnlLemmaTypesTable.add(options, BorderLayout.SOUTH);
@@ -270,14 +214,14 @@ public class FormattedFilePanel extends JPanel {
 
 	private JPanel createTokensOptionsPanel(WordListModel nTokensListModel, WordListModel tokensListModel) {
 		JPanel optionsPanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
-		optionsPanel.setBorder(BorderFactory.createTitledBorder("Optionen"));
+		optionsPanel.setBorder(BorderFactory.createTitledBorder("Options"));
 		
-		JButton btnSort1 = new JButton("Originalreihenf.");
+		JButton btnSort1 = new JButton("Original order.");
 		btnSort1.addActionListener(e -> {
             nTokensListModel.sortOriginal();
             tokensListModel.sortOriginal();
         });
-		JButton btnSort2 = new JButton("Alphabetisch");
+		JButton btnSort2 = new JButton("Alphabetical");
 		btnSort2.addActionListener(e -> {
             nTokensListModel.sortName();
             tokensListModel.sortName();
@@ -292,9 +236,9 @@ public class FormattedFilePanel extends JPanel {
 	private JPanel initializeTextAndResultPanel() {
 		JPanel panel = new JPanel(new GridLayout(1, 0));
 		
-		JPanel pnlOriginalText = createTextAreaPanel("Originaltext", originalTextArea, file.getText() );
-		JPanel pnlCleanText    = createTextAreaPanel("Normalisierter Text", cleanTextArea, file.getCleanText() );
-		JPanel pnlSearchResult = createTextAreaPanel("Suchresultate", resultTextArea, "");
+		JPanel pnlOriginalText = createTextAreaPanel("Original source", originalTextArea, file.getText() );
+		JPanel pnlCleanText    = createTextAreaPanel("Normalized source", cleanTextArea, file.getCleanText() );
+		JPanel pnlSearchResult = createTextAreaPanel("Search results", resultTextArea, "");
 		
 		panel.add(pnlOriginalText);
 		panel.add(pnlCleanText);
@@ -325,9 +269,7 @@ public class FormattedFilePanel extends JPanel {
 		    
 			private void performSearch() {
 				String filter = txtSearch.getText();
-				filteredListModel.setFilter(element -> {
-					return ((Word) element).getWord().contains(filter);
-				});
+				filteredListModel.setFilter(element -> element.getWord().contains(filter));
 		    }
 		    
 			@Override
@@ -359,16 +301,16 @@ public class FormattedFilePanel extends JPanel {
 	}
 
 
-	private JPanel createTablePanel(String title, JTable table, WordTypeTableModel tableModel) {
+	private JPanel createTablePanel(JTable table, WordTypeTableModel tableModel) {
 		JPanel panel = new JPanel(new BorderLayout());
-		panel.setBorder(BorderFactory.createTitledBorder(title));
+		panel.setBorder(BorderFactory.createTitledBorder("Types"));
 		
 		table.setModel(tableModel);
 		TableRowSorter<TableModel> sorter = new TableRowSorter<>(tableModel);
 		table.setRowSorter(sorter);
 		
 		JTextField txtSearch = new JTextField(10);
-		JCheckBox chkOnlyNonLemmas = new JCheckBox("Nur Eintr�ge ohne Lemma");
+		JCheckBox chkOnlyNonLemmas = new JCheckBox("Only entries without lemma.");
 		txtSearch.getDocument().addDocumentListener(new DocumentListener() {
 		    
 			private void performSearch() {
@@ -376,12 +318,7 @@ public class FormattedFilePanel extends JPanel {
 		        if (text.trim().length() == 0) {
 		        	sorter.setRowFilter(null);
 		        } else {
-		        	RowFilter f = RowFilter.regexFilter("(?i)" + text);
-		        	List<RowFilter<Object,Object>> ls = new ArrayList<>();
-		        	ls.add( f );
-		        	ls.add(lemmaFilter);
 		        	sorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
-		        	//sorter.setRowFilter( RowFilter.andFilter( ls ) );
 		        }
 		        table.repaint();
 		    }
@@ -404,37 +341,37 @@ public class FormattedFilePanel extends JPanel {
 		panel.add(new JScrollPane( table ), BorderLayout.CENTER);
 		
 		JPanel options = new JPanel(new FlowLayout());
-		JButton btn = new JButton( "Nachweise" );
+		JButton btn = new JButton( "Occurrences" );
 		JTextField tokensBefore = new JTextField("3",5);
 		JTextField tokensAfter = new JTextField("3", 5);
 		btn.addActionListener(e -> {
-            String foundString = "";
+            StringBuilder foundString = new StringBuilder();
             WordType word = tableModel.getWordTypeAt( sorter.convertRowIndexToModel(table.getSelectedRow()) );
-            for(Occurence o : word.getOccurences()) {
+            for(Occurrence o : word.getOccurrences()) {
                 FormattedFile file = TextLibrary.getInstance().getFile(o.getFile());
-                String s = file.getFilename().toString()+":"+ file.getContext(o.getToken(), Integer.valueOf(tokensBefore.getText()), Integer.valueOf(tokensAfter.getText()));
-                foundString += s + "\n";
+                String s = file.getFilename()+":"+ file.getContext(o.getToken(), Integer.valueOf(tokensBefore.getText()), Integer.valueOf(tokensAfter.getText()));
+                foundString.append(s).append("\n");
             }
-            resultTextArea.setText(foundString);
+            resultTextArea.setText(foundString.toString());
         });
 		options.add(btn);
 		
-		options.add(new JLabel("Suche"));
+		options.add(new JLabel("Search"));
 		options.add(txtSearch);
 		options.add(new JLabel("     "));
 		options.add(btn);
-		options.add(new JLabel("Vor:"));
+		options.add(new JLabel("Before:"));
 		options.add(tokensBefore);
-		options.add(new JLabel("Nach:"));
+		options.add(new JLabel("After:"));
 		options.add(tokensAfter);
 		options.add(chkOnlyNonLemmas);
 		panel.add(options, BorderLayout.SOUTH);
 		return panel;
 	}
 
-	private JPanel createTablePanel(String title, JTable table, TableModel tableModel) {
+	private JPanel createTablePanel(JTable table, TableModel tableModel) {
 		JPanel panel = new JPanel(new BorderLayout());
-		panel.setBorder(BorderFactory.createTitledBorder(title));
+		panel.setBorder(BorderFactory.createTitledBorder("Statistics"));
 		
 		table.setModel(tableModel);
 		panel.add(new JScrollPane( table ), BorderLayout.CENTER);

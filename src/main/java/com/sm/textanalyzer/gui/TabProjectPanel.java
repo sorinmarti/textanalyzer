@@ -1,70 +1,42 @@
 package com.sm.textanalyzer.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import com.sm.textanalyzer.app.*;
+
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.List;
 
-import javax.swing.BorderFactory;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
-import javax.swing.ListCellRenderer;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
-import com.sm.textanalyzer.app.FileUtils;
-import com.sm.textanalyzer.app.FormattedFile;
-import com.sm.textanalyzer.app.FormattedFileUtils;
-import com.sm.textanalyzer.app.LemmaLibraryItem;
-import com.sm.textanalyzer.app.Project;
-import com.sm.textanalyzer.app.ProjectFileManager;
-import com.sm.textanalyzer.app.TextLibrary;
-
-public class TabProjectPanel extends JPanel {
+class TabProjectPanel extends JPanel {
 	
 	private final AnalyzerWindow parent;
 	
-	public TabProjectPanel(final AnalyzerWindow parent) {
+	TabProjectPanel(final AnalyzerWindow parent) {
 		this.parent = parent;
 		updatePanel();
 	}
 	
-	public void updatePanel() {
+	void updatePanel() {
 		Project project = TextLibrary.getInstance().getProjectFile();
 		
 		removeAll();
 		if(project == null) {
 			setLayout( new FlowLayout(FlowLayout.CENTER) );
-			JLabel lblNoProject = new JLabel("Es ist kein Projekt ge�ffnet. Erstellen oder �ffnen Sie ein Projekt um fortzufahren.");
+			JLabel lblNoProject = new JLabel("No open project. Create or open a project to continue.");
 			add( lblNoProject );
 		}
 		else {
 			setLayout( new BorderLayout() );
 			
 			JPanel pnlInformation = new JPanel( new FlowLayout( FlowLayout.CENTER) );
-			String txt = "";
+			String txt;
 			if( project.getProjectFile()==null ) {
-				txt = "Das Projekt wurde bisher noch nicht gespeichert.";
+				txt = "The project has not been saved yet.";
 			}
 			else {
-				txt = "Es ist ein Projekt ge�ffnet: "+project.getProjectFile();
+				txt = "Opened project: "+project.getProjectFile();
 			}
 			JLabel lblNoProject = new JLabel(txt);
 			pnlInformation.add( lblNoProject );
@@ -72,10 +44,10 @@ public class TabProjectPanel extends JPanel {
 			
 			JPanel pnlFiles = new JPanel( new BorderLayout() );
 			final JLabel lblPath = new JLabel( "" );
-			final JButton btnDel = new JButton( "Ausgew�hlten Pfad l�schen" );
-			final JButton btnLemma = new JButton( "Lemma-Bibliothek einlesen." );
+			final JButton btnDel = new JButton( "Delete path from Corpus" );
+			final JButton btnLemma = new JButton( "Load lemma library." );
 			
-			pnlFiles.setBorder( BorderFactory.createTitledBorder("Hinzugef�gte Dateipfade") );
+			pnlFiles.setBorder( BorderFactory.createTitledBorder("Added corpus paths") );
 			JList<Path> addedPathsList = new JList<>();
 			addedPathsList.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
 			addedPathsList.setModel(new PathListModel( project.getProjectTextFiles() ));
@@ -107,7 +79,7 @@ public class TabProjectPanel extends JPanel {
 			c.ipadx = 5; c.ipady = 5;
 			c.insets = new Insets(5, 5, 5, 5);
 			
-			JLabel lbl1 = new JLabel( "Pfad:" );
+			JLabel lbl1 = new JLabel( "Path:" );
 			c.gridx = 0; c.gridy = 0; c.gridwidth = 1; c.gridheight = 1;
 			c.weightx = .4f; c.fill = GridBagConstraints.NONE;
 			c.anchor = GridBagConstraints.LINE_END;
@@ -120,17 +92,15 @@ public class TabProjectPanel extends JPanel {
 			c.weightx = .6f; c.fill = GridBagConstraints.BOTH;
 			panel.add(lblPath, c);
 			
-			JButton btnAdd = new JButton( "Neuen Pfad hinzuf�gen" );
+			JButton btnAdd = new JButton( "Add new path" );
 			btnAdd.addActionListener(e -> {
-                File file = parent.showOpenDialog("Korpusdatei �ffnen", "Keine Datei ausgew�hlt", parent.textFileFilter, false);
+                File file = parent.showOpenDialog("Open corpus path", "No corpus file selected.", parent.textFileFilter, false);
                 if(file != null) {
                     if( !FileUtils.fileExists( file ) ) {
-                        parent.showMessage("Die Datei existiert nicht.");
-                        return;
+                        parent.showMessage("The selected file does not exist.");
                     }
                     else if( FileUtils.fileExistsInProjectList( TextLibrary.getInstance().getProjectFile(), file ) ) {
-                        parent.showMessage("Die Datei existiert bereits im Projekt.");
-                        return;
+                        parent.showMessage("The file already exists in the project.");
                     }
                     else {
                         TextLibrary.getInstance().getProjectFile().addProjectTextFile( file.toPath() );
@@ -143,27 +113,27 @@ public class TabProjectPanel extends JPanel {
 			c.weightx = .4f; c.fill = GridBagConstraints.BOTH;
 			panel.add(btnAdd, c);
 			
-			JLabel lbl3 = new JLabel( "F�gt dem Projekt eine neue Datei zur Auswertung hinzu." );
+			JLabel lbl3 = new JLabel( "Adds a new file for analysis to the project." );
 			c.gridx = 1; c.gridy = 1; c.gridwidth = 1; c.gridheight = 1;
 			c.weightx = .6f; c.fill = GridBagConstraints.BOTH;
 			panel.add(lbl3, c);
 			
-			JButton btnAddFolder = new JButton( "Neuen Pfad-Ordner hinzuf�gen" );
+			JButton btnAddFolder = new JButton( "Add new path directory" );
 			btnAddFolder.addActionListener(e -> {
-                File file = parent.showOpenDialog("Korpusordner �ffnen", "Kein Ordner ausgew�hlt", parent.folderFileFilter, true);
+                File file = parent.showOpenDialog("Open corpus directory", "No directory selected", parent.folderFileFilter, true);
                 if(file != null) {
                     List<Path> filesToOpen = FileUtils.collectFilenames( file.getAbsolutePath() );
                     if(filesToOpen.size()>0) {
                         int addedFiles = 0;
                         int ignoredFiles = 0;
-                        String str = "<html>Nicht hinzugef�gt:<br/>";
+                        StringBuilder str = new StringBuilder("<html>Not added:<br/>");
                         for(Path p : filesToOpen) {
                             if( !FileUtils.fileExists( p ) ) {
-                                str += p.getFileName().toString() + " existiert nicht.<br/>";
+                                str.append(p.getFileName().toString()).append(" doesn't exist.<br/>");
                                 ignoredFiles++;
                             }
                             else if( FileUtils.fileExistsInProjectList( TextLibrary.getInstance().getProjectFile(), p ) ) {
-                                str += p.getFileName().toString() + " ist bereits im Projekt.<br/>";
+                                str.append(p.getFileName().toString()).append(" is already part of the project.<br/>");
                                 ignoredFiles++;
                             }
                             else {
@@ -175,8 +145,8 @@ public class TabProjectPanel extends JPanel {
                             parent.projectHasChanged();
                         }
                         if(ignoredFiles>0) {
-                            str += "Es wurden "+ignoredFiles+" Dateien �bersprungen und "+addedFiles+" Dateien hinzugef�gt.";
-                            parent.showMessage( str );
+                            str.append("There have been ").append(ignoredFiles).append(" ignored files and ").append(addedFiles).append(" added files.");
+                            parent.showMessage(str.toString());
                         }
                     }
                 }
@@ -185,7 +155,7 @@ public class TabProjectPanel extends JPanel {
 			c.weightx = .4f; c.fill = GridBagConstraints.BOTH;
 			panel.add(btnAddFolder, c);
 			
-			JLabel lbl7 = new JLabel( "F�gt dem Projekt neue Dateien zur Auswertung hinzu." );
+			JLabel lbl7 = new JLabel( "Adds new files for analysis." );
 			c.gridx = 1; c.gridy = 2; c.gridwidth = 1; c.gridheight = 1;
 			c.weightx = .6f; c.fill = GridBagConstraints.BOTH;
 			panel.add(lbl7, c);
@@ -207,7 +177,7 @@ public class TabProjectPanel extends JPanel {
 			c.weightx = .4f; c.fill = GridBagConstraints.BOTH;
 			panel.add(btnDel, c);
 			
-			JLabel lbl4 = new JLabel( "L�scht den gew�hlten Dateipfad aus dem Projekt." );
+			JLabel lbl4 = new JLabel( "Deletes the selected path from the project." );
 			c.gridx = 1; c.gridy = 3; c.gridwidth = 1; c.gridheight = 1;
 			c.weightx = .6f; c.fill = GridBagConstraints.BOTH;
 			panel.add(lbl4, c);
@@ -215,7 +185,7 @@ public class TabProjectPanel extends JPanel {
 			// btn lemma
 			btnLemma.addActionListener(e -> {
                 //TODO
-                File file = parent.showOpenDialog("Lemma Bibliothek laden", "Keine Bibliothek geladen.", parent.lemmaFileFilter, false);
+                File file = parent.showOpenDialog("Load lemma library", "No library loaded.", parent.lemmaFileFilter, false);
                 if(file != null) {
                     try {
                         List<LemmaLibraryItem> list = ProjectFileManager.readLemmaList( file );
@@ -223,7 +193,7 @@ public class TabProjectPanel extends JPanel {
                         TextLibrary.getInstance().setLemmaLibrary( list );
                         parent.resetLemmaPanel();
                     } catch (Exception e1) {
-                        parent.showMessage("Die Bibliothek konnte nicht geladen werden.");
+                        parent.showMessage("The library could not be loaded.");
                     }
                 }
             });
@@ -231,12 +201,12 @@ public class TabProjectPanel extends JPanel {
 			c.weightx = .4f; c.fill = GridBagConstraints.BOTH;
 			panel.add(btnLemma, c);
 			
-			JLabel lbl5 = new JLabel( "L�dt eine Lemma-Bibliothek" );
+			JLabel lbl5 = new JLabel( "Loads a lemma library." );
 			c.gridx = 1; c.gridy = 4; c.gridwidth = 1; c.gridheight = 1;
 			c.weightx = .6f; c.fill = GridBagConstraints.BOTH;
 			panel.add(lbl5, c);
 			
-			JButton btnRead = new JButton( "Hinzugef�gte Pfade einlesen." );
+			JButton btnRead = new JButton( "Analyze added paths." );
 			btnRead.addActionListener(e -> {
                 JDialog dialog = new JDialog(parent, "Loading", true);
                 JLabel lbl = new JLabel( "          Loading          ");
@@ -247,45 +217,40 @@ public class TabProjectPanel extends JPanel {
                 dialog.pack();
                 dialog.setLocationRelativeTo( parent );
 
-                new Thread( new Runnable() {
-                    @Override
-                    public void run() {
-                        TextLibrary.getInstance().resetFormattedFiles();
+                new Thread(() -> {
+                    TextLibrary.getInstance().resetFormattedFiles();
 
-                        for(Path path : TextLibrary.getInstance().getProjectFile().getProjectTextFiles()) {
-                            FormattedFile file = new FormattedFile(path);
-                            file.setFileNumber(TextLibrary.getInstance().getFileNumber());
-                            lbl.setText("Reading file:"+file.getFilename());
-                            try {
-                                file.readFile();
-                            } catch(NoSuchFileException e) {
-                                // TODO error handling
-                            }
-                            lbl.setText("Reading file:"+file.getFilename()+"...Done!");
-                            TextLibrary.getInstance().addFile( file );
+                    for(Path path : TextLibrary.getInstance().getProjectFile().getProjectTextFiles()) {
+                        FormattedFile file = new FormattedFile(path);
+                        file.setFileNumber(TextLibrary.getInstance().getFileNumber());
+                        lbl.setText("Reading file:"+file.getFilename());
+                        try {
+                            file.readFile();
+                        } catch(NoSuchFileException e12) {
+                            // TODO error handling
                         }
-
-                        lbl.setText("Get merged file.");
-                        TextLibrary.getInstance().getMergedFile();
-
-                        lbl.setText("Resetting UI.");
-                        parent.resetCorpusPanels();
-
-                        dialog.setVisible(false);
-                        dialog.dispose();
+                        lbl.setText("Reading file:"+file.getFilename()+"...Done!");
+                        TextLibrary.getInstance().addFile( file );
                     }
+
+                    lbl.setText("Get merged file.");
+                    TextLibrary.getInstance().getMergedFile();
+
+                    lbl.setText("Resetting UI.");
+                    parent.resetCorpusPanels();
+
+                    dialog.setVisible(false);
+                    dialog.dispose();
                 }).start();
 
 
                 dialog.setVisible(true);
-                String s = TextLibrary.getInstance().getCorpusTypesExportString();
-                System.out.println( s );
             });
 			c.gridx = 0; c.gridy = 5; c.gridwidth = 1; c.gridheight = 1;
 			c.weightx = .4f; c.fill = GridBagConstraints.BOTH;
 			panel.add(btnRead, c);
 			
-			JLabel lbl6 = new JLabel( "Liest die ausgew�hlten Textdateien ein." );
+			JLabel lbl6 = new JLabel( "Reads the added paths and analyzes them." );
 			c.gridx = 1; c.gridy = 5; c.gridwidth = 1; c.gridheight = 1;
 			c.weightx = .6f; c.fill = GridBagConstraints.BOTH;
 			panel.add(lbl6, c);

@@ -1,19 +1,13 @@
 package com.sm.textanalyzer.gui;
 
-import java.util.ArrayList;
-
-import javax.swing.AbstractListModel;
-import javax.swing.ListModel;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
-
 import com.sm.textanalyzer.app.Word;
 
-public class FilteredListModel extends AbstractListModel<Word> {
-    /**
-	 * 10.12.17
-	 */
-	private static final long serialVersionUID = 915854298159383043L;
+import javax.swing.*;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
+import java.util.ArrayList;
+
+class FilteredListModel extends AbstractListModel<Word> {
 
 	public interface Filter {
         boolean accept(Word element);
@@ -23,7 +17,7 @@ public class FilteredListModel extends AbstractListModel<Word> {
     private Filter _filter;
     private final ArrayList<Integer> _indices = new ArrayList<>();
 
-    public FilteredListModel(ListModel<Word> source) {
+    FilteredListModel(ListModel<Word> source) {
         if (source == null) {
             throw new IllegalArgumentException("Source is null");
         }
@@ -44,7 +38,7 @@ public class FilteredListModel extends AbstractListModel<Word> {
     }
     
 
-    public void setFilter(Filter f) {
+    void setFilter(Filter f) {
         _filter = f;
         doFilter();
     }

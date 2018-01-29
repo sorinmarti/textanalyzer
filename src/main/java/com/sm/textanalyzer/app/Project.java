@@ -8,7 +8,7 @@ import java.util.List;
 public class Project {
 
 	private File projectFile;
-	List<Path> projectTextFiles;
+	private final List<Path> projectTextFiles;
 	private Path lemmaFileName;
 	
 	public Project( ) {
@@ -21,17 +21,21 @@ public class Project {
 		return projectTextFiles;
 	}
 
+	/*
 	public void setProjectTextFiles(List<Path> projectTextFiles) {
 		this.projectTextFiles = projectTextFiles;
 	}
-	
+	*/
+
 	public void addProjectTextFile(Path projectTextFile) {
 		this.projectTextFiles.add( projectTextFile );
 	}
-	
+
+	/*
 	public void removeProjectTextFile(Path projectTextFile) {
 		this.projectTextFiles.remove( projectTextFile );
 	}
+	*/
 
 	public Path getLemmaFileName() {
 		return lemmaFileName;

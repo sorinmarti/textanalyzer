@@ -1,22 +1,16 @@
 package com.sm.textanalyzer.gui;
 
-import java.util.Collections;
-import java.util.List;
-
-import javax.swing.AbstractListModel;
-import javax.swing.ListModel;
-
 import com.sm.textanalyzer.app.Word;
 
-public class WordListModel extends AbstractListModel<Word> implements ListModel<Word> {
+import javax.swing.*;
+import java.util.Comparator;
+import java.util.List;
 
-	/**
-	 * 10.12.17
-	 */
-	private static final long serialVersionUID = 5116014298632213234L;
+class WordListModel extends AbstractListModel<Word> implements ListModel<Word> {
+
 	private final List<Word> list;
 	
-	public WordListModel(List<Word> list) {
+	WordListModel(List<Word> list) {
 		super();
 		this.list = list;
 	}
@@ -31,13 +25,13 @@ public class WordListModel extends AbstractListModel<Word> implements ListModel<
 		return list.size();
 	}
 	
-	public void sortName(){
-	    Collections.sort(list, (word1, word2) -> word1.getSortingWord().compareTo(word2.getSortingWord()));
+	void sortName(){
+	    list.sort(Comparator.comparing(Word::getSortingWord));
 	    fireContentsChanged(this, 0, list.size()-1);
 	}
 	
-	public void sortOriginal(){
-	    Collections.sort(list, (word1, word2) -> word1.getBeginIndex()-word2.getBeginIndex());
+	void sortOriginal(){
+	    list.sort(Comparator.comparingInt(Word::getBeginIndex));
 	    fireContentsChanged(this, 0, list.size()-1);
 	}
 }

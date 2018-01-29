@@ -14,13 +14,13 @@ public class FormattedFile {
 	private final Path savedSource;
 	private String text;
 	private String cleanText;
-	private List<Word> tokens;
-	private List<Word> cleanTokens;
-	private List<WordType> types;
-	private List<WordType> cleanTypes;
+	private final List<Word> tokens;
+	private final List<Word> cleanTokens;
+	private final List<WordType> types;
+	private final List<WordType> cleanTypes;
 	private int fileNumber;
 	
-	public FormattedFile(List<FormattedFile> files) {
+	FormattedFile(List<FormattedFile> files) {
 		this((Path)null);
 				
 		for(FormattedFile file : files) {
@@ -44,12 +44,12 @@ public class FormattedFile {
 			
 			for(WordType type : file.getTypes()) {
 				WordType existing = getExistingType( type.getWord() );
-				existing.addOccurences(type.getOccurences());
+				existing.addOccurrences(type.getOccurrences());
 			}
 			
 			for(WordType type : file.getCleanTypes()) {
 				WordType existing = getExistingCleanType( type.getWord() );
-				existing.addOccurences(type.getOccurences());
+				existing.addOccurrences(type.getOccurrences());
 			}
 		}
 	}
@@ -132,12 +132,12 @@ public class FormattedFile {
 		
 		// 5.) Add token to type list
 		WordType savedType = getExistingType( word ); 
-		savedType.addOccurence(fileNumber, tokens.size()-1);
+		savedType.addOccurrence(fileNumber, tokens.size()-1);
 		
 		// 6.) Add clean token to clean type list
 		if(!strippedWord.isEmpty()) {
 			WordType savedCleanType = getExistingCleanType( strippedWord ); 
-			savedCleanType.addOccurence(fileNumber, cleanTokens.size()-1);
+			savedCleanType.addOccurrence(fileNumber, cleanTokens.size()-1);
 		}
 	}
 
@@ -164,8 +164,7 @@ public class FormattedFile {
 	}
 
 	private String prepareWord(String word) {
-		String formattedWord = word.replaceAll("[\\,\\.\\?\\!\\:\\;]", "");
-		return formattedWord;
+		return word.replaceAll("[,.\\?\\!\\:\\;]", "");
 	}
 	
 	private String removeSpecialCharacters(String word) {
@@ -190,9 +189,11 @@ public class FormattedFile {
 		return formattedWord;
 	}
 
+	/*
 	public Path getPath() {
 		return savedSource;
 	}
+	*/
 	
 	public String getFilename() {
 		String filename = "";
@@ -217,7 +218,7 @@ public class FormattedFile {
 		return cleanTokens;
 	}
 	
-	public List<WordType> getTypes() {
+	private List<WordType> getTypes() {
 		return types;
 	}
 	
@@ -229,9 +230,11 @@ public class FormattedFile {
 		return getAnyContext(tokens, word, wordsBefore, wordsAfter);
 	}
 
+	/*
 	public String getCleanContext(int word, int wordsBefore, int wordsAfter) {
 		return getAnyContext(cleanTokens, word, wordsBefore, wordsAfter);
 	}
+	*/
 	
 	private String getAnyContext(List<Word> wordList, int word, int wordsBefore, int wordsAfter) {
 		String result = "["+wordList.get(word).getWord()+"]";
@@ -263,14 +266,15 @@ public class FormattedFile {
 		this.fileNumber = fileNumber;
 	}
 
-	public float getTypeTokenRatio() {
+	float getTypeTokenRatio() {
 		return ((float)getCleanTypes().size()/(float)getTokens().size());
 	}
 
-	public int getNumTokens() {
+	int getNumTokens() {
 		return tokens.size();
 	}
-	
+
+	/*
 	public int getNumCleanTokens() {
 		return cleanTokens.size();
 	}
@@ -282,5 +286,5 @@ public class FormattedFile {
 	public int getNumCleanTypes() {
 		return cleanTypes.size();
 	}
-
+	*/
 }

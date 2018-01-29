@@ -5,47 +5,43 @@ import java.util.List;
 
 public class WordType {
 
-	private String word;
-	private List<Occurence> occurences;
+	private final String word;
+	private final List<Occurrence> occurrences;
 	
-	public WordType(String word) {
+	WordType(String word) {
 		this.word = word;
-		this.occurences = new ArrayList<>();
-	}
-	
-	public WordType(String word, Integer numberOfOccurences) {
-		this( word );
+		this.occurrences = new ArrayList<>();
 	}
 	
 	public String getWord() {
 		return word;
 	}
 	
-	public int getNumberOfOccurences() {
-		return occurences.size();
+	public int getNumberOfOccurrences() {
+		return occurrences.size();
 	}
 
-	public void addOccurence(int fileNumber, int tokenNumber) {
-		Occurence o = new Occurence(fileNumber, tokenNumber);
-		occurences.add( o );
+	void addOccurrence(int fileNumber, int tokenNumber) {
+		Occurrence o = new Occurrence(fileNumber, tokenNumber);
+		occurrences.add( o );
 	}
 	
-	public void addOccurences(List<Occurence> list) {
-		occurences.addAll(list);
+	void addOccurrences(List<Occurrence> list) {
+		occurrences.addAll(list);
 	}
 
-	public List<Occurence> getOccurences() {
-		return occurences;
+	public List<Occurrence> getOccurrences() {
+		return occurrences;
 	}
 
 	public int getNumberOfDifferentFiles() {
-		List<Integer> foundNums = new ArrayList<>();
-		for(Occurence o : occurences) {
-			if(!foundNums.contains(o.getFile())){
-				foundNums.add(o.getFile());
+		List<Integer> foundNumberOfFiles = new ArrayList<>();
+		for(Occurrence o : occurrences) {
+			if(!foundNumberOfFiles.contains(o.getFile())){
+				foundNumberOfFiles.add(o.getFile());
 			}
 		}
-		return foundNums.size();
+		return foundNumberOfFiles.size();
 	}
 
 	public boolean isGrouped() {

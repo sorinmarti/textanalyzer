@@ -6,7 +6,7 @@ import java.util.List;
 public class LemmaLibraryItem {
 
 	private final String lemmaName;
-	private List<String> variations;
+	private final List<String> variations;
 	
 	public LemmaLibraryItem(String name) {
 		this.lemmaName = name;
@@ -23,12 +23,8 @@ public class LemmaLibraryItem {
 		}
 	}
 	
-	public boolean hasVariation(String variation) {
+	boolean hasVariation(String variation) {
 		return this.variations.contains(variation);
-	}
-
-	public Lemma createLemma() {
-		return new Lemma( lemmaName );
 	}
 
 	public List<String> getVariations() {

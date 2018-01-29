@@ -6,9 +6,9 @@ import java.util.List;
 public class Lemma {
 
 	private final String lemmaName;
-	private List<WordType> typesOfLemma;
+	private final List<WordType> typesOfLemma;
 	
-	public Lemma(String name) {
+	Lemma(String name) {
 		this.lemmaName = name;
 		typesOfLemma = new ArrayList<>();
 	}
@@ -17,18 +17,20 @@ public class Lemma {
 		return this.lemmaName;
 	}
 	
-	public void addType(WordType type) {
+	void addType(WordType type) {
 		this.typesOfLemma.add(type);
 	}
-	
+
+	/*
 	public int getNumTypes() {
 		return typesOfLemma.size();
 	}
+	*/
 	
 	@Override
 	public boolean equals(Object obj) {
-		return lemmaName.equals(obj);
-	}
+        return obj != null && obj instanceof Lemma && lemmaName.equals(obj);
+    }
 
 	@Override
 	public int hashCode() {

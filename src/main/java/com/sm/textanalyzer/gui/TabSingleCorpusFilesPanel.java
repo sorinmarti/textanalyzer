@@ -1,25 +1,19 @@
 package com.sm.textanalyzer.gui;
 
-import java.awt.Component;
-
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.ListModel;
-import javax.swing.event.ListDataListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
 import com.sm.textanalyzer.app.FormattedFile;
 import com.sm.textanalyzer.app.TextLibrary;
 
-public class TabSingleCorpusFilesPanel extends JSplitPane {
+import javax.swing.*;
+import javax.swing.event.ListDataListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+
+class TabSingleCorpusFilesPanel extends JSplitPane {
 	
 	private final AnalyzerWindow parent;
 	
-	public TabSingleCorpusFilesPanel(AnalyzerWindow parent) {
+	TabSingleCorpusFilesPanel(AnalyzerWindow parent) {
 		this.parent = parent;
 		initialize();
 	}

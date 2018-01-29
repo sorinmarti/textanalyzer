@@ -22,11 +22,11 @@ public class TextLibrary {
 		lemmaItems = new ArrayList<>();
 		fileNumber = 0;
 		
-		Collections.sort( lemmaItems , (o1, o2) -> o1.getName().compareTo( o2.getName() ));
+		lemmaItems.sort(Comparator.comparing(LemmaLibraryItem::getName));
 	}
 	
 	public void resetFormattedFiles() {
-		files = new ArrayList<FormattedFile>();
+		files = new ArrayList<>();
 		mergedFile = null;
 		
 	}
@@ -94,7 +94,7 @@ public class TextLibrary {
 		return lemmas;
 	}
 	
-	public boolean isInTypeList(String word) {
+	boolean isInTypeList(String word) {
 		// Search through the lemma items to see if the type can be added to one
 		for(LemmaLibraryItem baseItem : lemmaItems) {
 			if(baseItem.hasVariation(word)) {
@@ -139,24 +139,23 @@ public class TextLibrary {
 			FormattedFile mostChars = getMostChars();
 			FormattedFile leastChars = getLeastChars();
 			
-			String[][] stats = { {"Anzahl Dateien",                   String.valueOf(  getNumFiles() )},
-								 {"Anzahl Types",                     String.valueOf( merged.getCleanTypes().size())},
-								 {"Anzahl Tokens",                    String.valueOf( merged.getTokens().size() )},
-					             {"Type/Token Ratio",                 String.valueOf( merged.getTypeTokenRatio() )},
-					             {"L�ngster Text (Token)",            String.valueOf( mostTokens.getFilename()+ " ("+mostTokens.getNumTokens()+")" )},
-					             {"K�rzester Text (Token)",           String.valueOf( leastTokens.getFilename()+ " ("+leastTokens.getNumTokens()+")" )},
-					             {"Durchschnitt Textl�nge (Tokens)",  String.valueOf( getAverageTokens() )},
-					             {"Median Textl�nge (Tokens)",        String.valueOf( getMedianTokens() )},
-					             {"L�ngster Text (Zeichen)",          String.valueOf( mostChars.getFilename()+ " ("+mostChars.getText().length()+")" )},
-					             {"K�rzester Text (Zeichen)",         String.valueOf( leastChars.getFilename()+ " ("+leastChars.getText().length()+")" )},
-					             {"Durchschnitt Textl�nge (Zeichen)", String.valueOf( getAverageChars() )},
-					             {"Median Textl�nge (Zeichen)",       String.valueOf( getMedianChars() )},
-					             {"Anzahl Lemmata",                   String.valueOf( getLemmaLibrary().size() )},
-					             {"Anzahl Types in Lemmata",          String.valueOf( getNumberOfLemmaTypes() )},
-					             {"Lemmata mit nur einem Type",       String.valueOf( getNumberOfLemmasWithOnlyOneType() )},
-					             {"Lemmata ohne Types",               String.valueOf( getNumberOfLemmasWithNoType() )}
+			return new String[][]{ {"Number of files",                   String.valueOf(  getNumFiles() )},
+								 {"Number of types",                     String.valueOf( merged.getCleanTypes().size())},
+								 {"Number of tokens",                    String.valueOf( merged.getTokens().size() )},
+					             {"Type/Token ratio",                 String.valueOf( merged.getTypeTokenRatio() )},
+					             {"Longest text (Token)",            String.valueOf( mostTokens.getFilename()+ " ("+mostTokens.getNumTokens()+")" )},
+					             {"Shortest text (Token)",           String.valueOf( leastTokens.getFilename()+ " ("+leastTokens.getNumTokens()+")" )},
+					             {"Average text length (Tokens)",  String.valueOf( getAverageTokens() )},
+					             {"Median text length (Tokens)",        String.valueOf( getMedianTokens() )},
+					             {"Longest Text (Characters)",          String.valueOf( mostChars.getFilename()+ " ("+mostChars.getText().length()+")" )},
+					             {"Shortest Text (Characters)",         String.valueOf( leastChars.getFilename()+ " ("+leastChars.getText().length()+")" )},
+					             {"Average text length (Characters)", String.valueOf( getAverageChars() )},
+					             {"Median text length (Characters)",       String.valueOf( getMedianChars() )},
+					             {"Number of lemmas",                   String.valueOf( getLemmaLibrary().size() )},
+					             {"Number of types in lemmas",          String.valueOf( getNumberOfLemmaTypes() )},
+					             {"Lemmas with one type only",       String.valueOf( getNumberOfLemmasWithOnlyOneType() )},
+					             {"Lemmas without type",               String.valueOf( getNumberOfLemmasWithNoType() )}
 								 };
-			return stats;
 		}
 		return new String[][]{};
 	}
@@ -271,7 +270,7 @@ public class TextLibrary {
 			chars.add(f.getText().length());
 		}
 		Collections.sort(chars);
-		double median = 0;
+		double median;
 		if (chars.size() % 2 == 0) {
 			median = (
 					(double)chars.get(chars.size()/2) + 
@@ -285,64 +284,58 @@ public class TextLibrary {
 
 	public void addLemmaItem(LemmaLibraryItem lemmaLibraryItem) {
 		lemmaItems.add(lemmaLibraryItem);
-		Collections.sort( lemmaItems , (o1, o2) -> o1.getName().compareTo( o2.getName() ));
+		lemmaItems.sort(Comparator.comparing(LemmaLibraryItem::getName));
 	}
 	
-	/**
-	 * 
-	 * @return
-	 */
+	/*
 	public String getCorpusLemmaExportString() {
-		String export = "";
+		StringBuilder export = new StringBuilder();
 		List<Lemma> lemmas = getLemmas( mergedFile );
 		for(Lemma lemma : lemmas) {
-			export += lemma.getName() + " ("+lemma.getNumTypes()+"): [";
+			export.append(lemma.getName()).append(" (").append(lemma.getNumTypes()).append("): [");
 			for(WordType type : lemma.getTypes()) {
-				export += type.getWord() + "("+type.getNumberOfOccurences()+"/"+type.getNumberOfDifferentFiles()+"), ";
+				export.append(type.getWord()).append("(").append(type.getNumberOfOccurrences()).append("/").append(type.getNumberOfDifferentFiles()).append("), ");
 			}
 			if(lemma.getTypes().size()>0) {
-				export = export.substring(0, export.length()-2);
+				export = new StringBuilder(export.substring(0, export.length() - 2));
 			}
-			export += "]\n";
+			export.append("]\n");
 		}
-		return export;
+		return export.toString();
 	}
-	
-	/**
-	 * 
-	 * @return
 	 */
+	
+	/*
 	public String getCorpusTypesExportString() {
-		String export = "";
+		StringBuilder export = new StringBuilder();
 		int addedFiles = 0;
 		for(WordType type : mergedFile.getCleanTypes()) {
-			if(type.getOccurences().size()>1 || type.isGrouped()) {	// Type exists more than one time OR is in lemma library
-				export += type.getWord() + " ("+type.getOccurences().size()+"), ";
+			if(type.getOccurrences().size()>1 || type.isGrouped()) {	// Type exists more than one time OR is in lemma library
+				export.append(type.getWord()).append(" (").append(type.getOccurrences().size()).append("), ");
 				addedFiles++;
 			}
 		}
 		if(addedFiles>0) {
-			export = export.substring(0, export.length()-2);
+			export = new StringBuilder(export.substring(0, export.length() - 2));
 		}
-		return export;
+		return export.toString();
 	}
-	
-	/**
-	 * 
-	 * @return
 	 */
+	
+	/*
 	public String getLemmaLibraryExportString() {
-		String export = "";
+		StringBuilder export = new StringBuilder();
 		for(LemmaLibraryItem item : getLemmaLibrary()) {
-			export += item.getName()+": ";
+			export.append(item.getName()).append(": ");
 			for(String variation :  item.getVariations()) {
-				export += variation + ", ";
+				export.append(variation).append(", ");
 			}
 			if(item.getVariations().size()>0) {
-				export = export.substring(0, export.length()-2);
+				export = new StringBuilder(export.substring(0, export.length() - 2));
 			}
 		}
 		
-		return export;
+		return export.toString();
 	}
+	 */
 }
