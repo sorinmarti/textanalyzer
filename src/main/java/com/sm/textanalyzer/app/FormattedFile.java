@@ -190,11 +190,9 @@ public class FormattedFile {
 		return formattedWord;
 	}
 
-	/*
 	public Path getPath() {
 		return savedSource;
 	}
-	*/
 	
 	public String getFilename() {
 		String filename = "";
@@ -219,7 +217,7 @@ public class FormattedFile {
 		return cleanTokens;
 	}
 	
-	private List<WordType> getTypes() {
+	public List<WordType> getTypes() {
 		return types;
 	}
 	
@@ -231,11 +229,9 @@ public class FormattedFile {
 		return getAnyContext(tokens, word, wordsBefore, wordsAfter);
 	}
 
-	/*
 	public String getCleanContext(int word, int wordsBefore, int wordsAfter) {
 		return getAnyContext(cleanTokens, word, wordsBefore, wordsAfter);
 	}
-	*/
 	
 	private String getAnyContext(List<Word> wordList, int word, int wordsBefore, int wordsAfter) {
 		String result = "["+wordList.get(word).getWord()+"]";

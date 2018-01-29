@@ -28,7 +28,7 @@ public class FileUtils {
 	}
 	
 	private static Predicate<Path> isTextFile() {
-        return p -> p.getFileName().toString().endsWith("txt") && !p.getName( p.getNameCount()-1 ).toString().contains("test"); //NON-NLS //NON-NLS
+        return p -> p.getFileName().toString().endsWith("txt"); //NON-NLS
     }
 
 	/*
