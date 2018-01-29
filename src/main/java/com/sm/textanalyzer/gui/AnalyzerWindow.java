@@ -16,7 +16,13 @@ import java.util.ResourceBundle;
 
 public class AnalyzerWindow extends JFrame {
 
-	private final ResourceBundle resourceBundle = MainClass.getResourceBundle();
+    static final String XML = "xml"; //NON-NLS
+    static final String TXT = "txt"; //NON-NLS
+    static final String RES_IMG_TAB_CORPUS_PNG = "res/img/tab_corpus.png"; //NON-NLS
+    static final String RES_IMG_TAB_PROJECT_PNG = "res/img/tab_project.png"; //NON-NLS
+    static final String RES_IMG_TAB_LEMMAS_PNG = "res/img/tab_lemmas.png"; //NON-NLS
+
+    private final ResourceBundle resourceBundle = MainClass.getResourceBundle();
 
 	private JMenuItem menuItemProjectSave;
 	private JMenuItem menuItemProjectSaveAs;
@@ -30,9 +36,9 @@ public class AnalyzerWindow extends JFrame {
 	private TabLemmaLibraryPanel      lemmaPanel          = new TabLemmaLibraryPanel();
 
 	private final JFileChooser fileChooser = new JFileChooser();
-	private final FileNameExtensionFilter projectFileFilter = new FileNameExtensionFilter(resourceBundle.getString("project.files"), "xml");
-	final FileNameExtensionFilter lemmaFileFilter = new FileNameExtensionFilter(resourceBundle.getString("lemma.library"), "xml");
-	final FileNameExtensionFilter textFileFilter = new FileNameExtensionFilter(resourceBundle.getString("text.files"), "txt");
+	private final FileNameExtensionFilter projectFileFilter = new FileNameExtensionFilter(resourceBundle.getString("project.files"), XML);
+	final FileNameExtensionFilter lemmaFileFilter = new FileNameExtensionFilter(resourceBundle.getString("lemma.library"), XML);
+	final FileNameExtensionFilter textFileFilter = new FileNameExtensionFilter(resourceBundle.getString("text.files"), TXT);
 	final FileFilter folderFileFilter = new FileFilter() {
 		
 		@Override
@@ -64,10 +70,10 @@ public class AnalyzerWindow extends JFrame {
 		
 		contentPane.add(tabbedPane, BorderLayout.CENTER);
 
-		tabbedPane.addTab(resourceBundle.getString("project"),         new ImageIcon("res/img/tab_project.png"), projectPanel, resourceBundle.getString("details.concerning.the.opened.project"));            // TAB: Project NON-NLS
-		tabbedPane.addTab(resourceBundle.getString("complete.corpus"), new ImageIcon("res/img/tab_corpus.png"),  combinedCorpusPanel, resourceBundle.getString("analysis.of.the.opened.corpus"));			// TAB: Complete Corpus
-		tabbedPane.addTab(resourceBundle.getString("single.files"),    new ImageIcon("res/img/tab_project.png"), singleFilesPanel, resourceBundle.getString("shows.the.single.corpus.files.analysis"));
-		tabbedPane.addTab(resourceBundle.getString("lemma.library"),   new ImageIcon("res/img/tab_lemmas.png"),  lemmaPanel, resourceBundle.getString("shows.the.opened.lemma.library"));
+		tabbedPane.addTab(resourceBundle.getString("project"),         new ImageIcon(RES_IMG_TAB_PROJECT_PNG), projectPanel, resourceBundle.getString("details.concerning.the.opened.project"));            // TAB: Project NON-NLS
+		tabbedPane.addTab(resourceBundle.getString("complete.corpus"), new ImageIcon(RES_IMG_TAB_CORPUS_PNG),  combinedCorpusPanel, resourceBundle.getString("analysis.of.the.opened.corpus"));			// TAB: Complete Corpus
+		tabbedPane.addTab(resourceBundle.getString("single.files"),    new ImageIcon(RES_IMG_TAB_PROJECT_PNG), singleFilesPanel, resourceBundle.getString("shows.the.single.corpus.files.analysis"));
+		tabbedPane.addTab(resourceBundle.getString("lemma.library"),   new ImageIcon(RES_IMG_TAB_LEMMAS_PNG),  lemmaPanel, resourceBundle.getString("shows.the.opened.lemma.library"));
 		
 		fireProjectClosed();
 	}
@@ -196,9 +202,9 @@ public class AnalyzerWindow extends JFrame {
 		// Menu Help
 		//////////////////////////////////////////////
 		JMenu menuHelp = new JMenu(resourceBundle.getString("help")); //NON-NLS
-		JMenuItem menuItemAbout = new JMenuItem(String.format("About %s", MainClass.APP_TITLE));
-		menuItemAbout.addActionListener(e -> showMessage(String.format("<html>%s<br/>%s %s</html>", MainClass.APP_TITLE, "Version", MainClass.APP_VERSION)));
-		JMenuItem menuItemHelp = new JMenuItem("Help");
+		JMenuItem menuItemAbout = new JMenuItem(String.format(resourceBundle.getString("about.s"), MainClass.APP_TITLE));
+		menuItemAbout.addActionListener(e -> showMessage(String.format("<html>%s<br/>%s %s</html>", MainClass.APP_TITLE, resourceBundle.getString("version"), MainClass.APP_VERSION))); //NON-NLS
+		JMenuItem menuItemHelp = new JMenuItem(resourceBundle.getString("help"));
 		menuItemHelp.addActionListener(e -> {
             try {
                 Desktop desktop = Desktop.getDesktop();
@@ -289,7 +295,7 @@ public class AnalyzerWindow extends JFrame {
 		String string;
 		if(TextLibrary.getInstance().getProjectFile().getProjectFile()==null) {
 			// The opened project was not yet saved
-			string = String.format("[%s]",resourceBundle.getString("unsaved.project"));
+			string = String.format("[%s]",resourceBundle.getString("unsaved.project")); //NON-NLS
 		}
 		else {
 			// The opened project has been saved

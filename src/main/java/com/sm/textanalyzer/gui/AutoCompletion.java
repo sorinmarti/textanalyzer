@@ -33,8 +33,8 @@ class AutoCompletion extends PlainDocument {
             if (!selecting) highlightCompletedText(0);
         });
         comboBox.addPropertyChangeListener(e -> {
-            if (e.getPropertyName().equals("editor")) configureEditor((ComboBoxEditor) e.getNewValue());
-            if (e.getPropertyName().equals("model")) model = (ComboBoxModel) e.getNewValue();
+            if (e.getPropertyName().equals("editor")) configureEditor((ComboBoxEditor) e.getNewValue());    //NON-NLS
+            if (e.getPropertyName().equals("model")) model = (ComboBoxModel) e.getNewValue();               //NON-NLS
         });
         editorKeyListener = new KeyAdapter() {
             public void keyPressed(KeyEvent e) {

@@ -8,6 +8,7 @@ import java.awt.*;
 import java.io.File;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -39,7 +40,7 @@ class TabProjectPanel extends JPanel {
 				txt = resourceBundle.getString("the.project.has.not.been.saved.yet");
 			}
 			else {
-				txt = "Opened project: "+project.getProjectFile();
+				txt = MessageFormat.format(resourceBundle.getString("opened.project.0"), project.getProjectFile());
 			}
 			JLabel lblNoProject = new JLabel(txt);
 			pnlInformation.add( lblNoProject );
@@ -129,14 +130,14 @@ class TabProjectPanel extends JPanel {
                     if(filesToOpen.size()>0) {
                         int addedFiles = 0;
                         int ignoredFiles = 0;
-                        StringBuilder str = new StringBuilder("<html>Not added:<br/>");
+                        StringBuilder str = new StringBuilder(String.format("<html>%s:<br/>", resourceBundle.getString("not.added"))); //NON-NLS
                         for(Path p : filesToOpen) {
                             if( !FileUtils.fileExists( p ) ) {
-                                str.append(p.getFileName().toString()).append(" doesn't exist.<br/>");
+                                str.append(String.format("%s %s.<br/>", p.getFileName().toString(), resourceBundle.getString("doesn.t.exist"))); //NON-NLS
                                 ignoredFiles++;
                             }
                             else if( FileUtils.fileExistsInProjectList( TextLibrary.getInstance().getProjectFile(), p ) ) {
-                                str.append(p.getFileName().toString()).append(" is already part of the project.<br/>");
+                                str.append(String.format("%s %s.<br/>",p.getFileName().toString(), resourceBundle.getString("is.already.part.of.the.project")));    //NON-NLS
                                 ignoredFiles++;
                             }
                             else {
@@ -148,7 +149,7 @@ class TabProjectPanel extends JPanel {
                             parent.projectHasChanged();
                         }
                         if(ignoredFiles>0) {
-                            str.append("There have been ").append(ignoredFiles).append(" ignored files and ").append(addedFiles).append(" added files.");
+                            str.append(String.format(resourceBundle.getString("there.have.been.d.ignored.files.and.d.added.files"), ignoredFiles, addedFiles));
                             parent.showMessage(str.toString());
                         }
                     }
@@ -226,13 +227,13 @@ class TabProjectPanel extends JPanel {
                     for(Path path : TextLibrary.getInstance().getProjectFile().getProjectTextFiles()) {
                         FormattedFile file = new FormattedFile(path);
                         file.setFileNumber(TextLibrary.getInstance().getFileNumber());
-                        lbl.setText("Reading file:"+file.getFilename());
+                        lbl.setText(String.format(resourceBundle.getString("reading.file.s"),file.getFilename()));
                         try {
                             file.readFile();
                         } catch(NoSuchFileException e12) {
                             // TODO error handling
                         }
-                        lbl.setText("Reading file:"+file.getFilename()+"...Done!");
+                        lbl.setText(String.format(resourceBundle.getString("reading.file.s.done"), file.getFilename()));
                         TextLibrary.getInstance().addFile( file );
                     }
 

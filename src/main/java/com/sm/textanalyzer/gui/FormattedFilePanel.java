@@ -92,7 +92,7 @@ class FormattedFilePanel extends JPanel {
             JTextField newLemma = new JTextField();
             panel1.add( newLemma, BorderLayout.SOUTH );
 
-            int answer = JOptionPane.showConfirmDialog(parent, panel1, "Add the type '"+typeToAdd+"' to lemma library", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+            int answer = JOptionPane.showConfirmDialog(parent, panel1, String.format(resourceBundle.getString("add.the.type.s.to.lemma.library"),typeToAdd), JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
             if(answer==JOptionPane.OK_OPTION) {
                 if(!newLemma.getText().isEmpty()) {
                     LemmaLibraryItem item = new LemmaLibraryItem( newLemma.getText() );
@@ -317,7 +317,7 @@ class FormattedFilePanel extends JPanel {
 		        if (text.trim().length() == 0) {
 		        	sorter.setRowFilter(null);
 		        } else {
-		        	sorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
+		        	sorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));  // NON-NLS
 		        }
 		        table.repaint();
 		    }
