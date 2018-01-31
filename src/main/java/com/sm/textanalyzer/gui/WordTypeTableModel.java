@@ -1,7 +1,7 @@
 package com.sm.textanalyzer.gui;
 
 import com.sm.textanalyzer.MainClass;
-import com.sm.textanalyzer.app.WordType;
+import com.sm.textanalyzer.app.Type;
 
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
@@ -16,10 +16,10 @@ class WordTypeTableModel extends AbstractTableModel implements TableModel {
 
 	private final ResourceBundle resourceBundle = MainClass.getResourceBundle();
 
-	private List<WordType> list;
+	private List<Type> list;
 	private final int sortingType;
 	
-	WordTypeTableModel(List<WordType> list, int initialSort) {
+	WordTypeTableModel(List<Type> list, int initialSort) {
 		super();
 		
 		this.sortingType = initialSort;
@@ -33,8 +33,8 @@ class WordTypeTableModel extends AbstractTableModel implements TableModel {
 		this.list = list;
 		
 		/*
-		List<WordType> strippedList = new ArrayList<>();
-		for(WordType wt : list) {
+		List<Type> strippedList = new ArrayList<>();
+		for(Type wt : list) {
 			if(wt.getNumberOfDifferentFiles()>1) {
 				strippedList.add(wt);
 			}
@@ -44,12 +44,12 @@ class WordTypeTableModel extends AbstractTableModel implements TableModel {
 		
 	}
 	
-	private static List<WordType> sortByName(List<WordType> list) {
-		list.sort(Comparator.comparing(WordType::getWord));
+	private static List<Type> sortByName(List<Type> list) {
+		list.sort(Comparator.comparing(Type::getWord));
 		return list;
 	}
 	
-	private static List<WordType> sortByOccurrence(List<WordType> list) {
+	private static List<Type> sortByOccurrence(List<Type> list) {
 		list.sort((o1, o2) -> {
 			int res = o2.getNumberOfOccurrences() - o1.getNumberOfOccurrences();
 			if (res == 0) {
@@ -102,7 +102,7 @@ class WordTypeTableModel extends AbstractTableModel implements TableModel {
 		return "";
 	}
 
-	WordType getWordTypeAt(int selectedRow) {
+	Type getWordTypeAt(int selectedRow) {
 		return list.get(selectedRow);
 	}
 
@@ -111,7 +111,7 @@ class WordTypeTableModel extends AbstractTableModel implements TableModel {
 		return getValueAt(0, column).getClass();
 	}
 
-	void setValues(List<WordType> types) {
+	void setValues(List<Type> types) {
 		switch(sortingType) {
 		case SORT_OCCURRENCE:
 			this.list = sortByOccurrence( types );

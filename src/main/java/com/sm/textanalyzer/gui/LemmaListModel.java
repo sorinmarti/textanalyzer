@@ -1,7 +1,7 @@
 package com.sm.textanalyzer.gui;
 
 import com.sm.textanalyzer.app.Lemma;
-import com.sm.textanalyzer.app.WordType;
+import com.sm.textanalyzer.app.Type;
 
 import javax.swing.*;
 import java.util.Comparator;
@@ -34,11 +34,11 @@ class LemmaListModel extends AbstractListModel<Lemma> implements ListModel<Lemma
 	void sortOccurrences(){
 		list.sort((o1, o2) -> {
 			Integer o1Files = 0;
-			for (WordType o1Type : o1.getTypes()) {
+			for (Type o1Type : o1.getTypes()) {
 				o1Files += o1Type.getNumberOfDifferentFiles();
 			}
 			Integer o2Files = 0;
-			for (WordType o2Type : o2.getTypes()) {
+			for (Type o2Type : o2.getTypes()) {
 				o2Files += o2Type.getNumberOfDifferentFiles();
 			}
 			return o2Files.compareTo(o1Files);

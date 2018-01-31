@@ -70,7 +70,7 @@ public class TextLibrary {
 	public List<Lemma> getLemmas(FormattedFile file) {
 		List<Lemma> lemmas = new ArrayList<>();
 		// For each type in file:
-		for(WordType type : file.getCleanTypes()) {
+		for(Type type : file.getCleanTypes()) {
 			// Search through the lemma items to see if the type can be added to one
 			for(LemmaLibraryItem baseItem : lemmaItems) {
 				// If a matching lemma for the type is found:
@@ -293,7 +293,7 @@ public class TextLibrary {
 		List<Lemma> lemmas = getLemmas( mergedFile );
 		for(Lemma lemma : lemmas) {
 			export.append(lemma.getName()).append(" (").append(lemma.getNumTypes()).append("): [");
-			for(WordType type : lemma.getTypes()) {
+			for(Type type : lemma.getTypes()) {
 				export.append(type.getWord()).append("(").append(type.getNumberOfOccurrences()).append("/").append(type.getNumberOfDifferentFiles()).append("), ");
 			}
 			if(lemma.getTypes().size()>0) {
@@ -309,7 +309,7 @@ public class TextLibrary {
 	public String getCorpusTypesExportString() {
 		StringBuilder export = new StringBuilder();
 		int addedFiles = 0;
-		for(WordType type : mergedFile.getCleanTypes()) {
+		for(Type type : mergedFile.getCleanTypes()) {
 			if(type.getOccurrences().size()>1 || type.isGrouped()) {	// Type exists more than one time OR is in lemma library
 				export.append(type.getWord()).append(" (").append(type.getOccurrences().size()).append("), ");
 				addedFiles++;

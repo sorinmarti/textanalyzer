@@ -15,10 +15,10 @@ public class FormattedFile {
 	private final Path savedSource;
 	private String text;
 	private String cleanText;
-	private final List<Word> tokens;
-	private final List<Word> cleanTokens;
-	private final List<WordType> types;
-	private final List<WordType> cleanTypes;
+	private final List<Token> tokens;
+	private final List<Token> cleanTokens;
+	private final List<Type> types;
+	private final List<Type> cleanTypes;
 	private int fileNumber;
 	
 	FormattedFile(List<FormattedFile> files) {
@@ -31,25 +31,25 @@ public class FormattedFile {
 			this.text += file.getText();
 			this.cleanText += file.getCleanText();
 			 
-			for(Word token : file.getTokens()) {
-				Word clonedToken = new Word( token );
+			for(Token token : file.getTokens()) {
+				Token clonedToken = new Token( token );
 				clonedToken.setBeginIndex(token.getBeginIndex()+textLength);
 				tokens.add(clonedToken);
 			}
-			for(Word token : file.getCleanTokens()) {
-				Word clonedToken = new Word( token );
+			for(Token token : file.getCleanTokens()) {
+				Token clonedToken = new Token( token );
 				clonedToken.setBeginIndex(token.getBeginIndex()+cleanTextLength);
 				cleanTokens.add(clonedToken);
 			}
 			
 			
-			for(WordType type : file.getTypes()) {
-				WordType existing = getExistingType( type.getWord() );
+			for(Type type : file.getTypes()) {
+				Type existing = getExistingType( type.getWord() );
 				existing.addOccurrences(type.getOccurrences());
 			}
 			
-			for(WordType type : file.getCleanTypes()) {
-				WordType existing = getExistingCleanType( type.getWord() );
+			for(Type type : file.getCleanTypes()) {
+				Type existing = getExistingCleanType( type.getWord() );
 				existing.addOccurrences(type.getOccurrences());
 			}
 		}
@@ -117,13 +117,13 @@ public class FormattedFile {
 		if(!strippedWord.isEmpty()) {
 			// 2.) If the word was not only special characters:
 			// --> Add token
-			Word wordObj = new Word(word);
-			wordObj.setBeginIndex(beginIndex);
-			wordObj.setSortingWord(strippedWord);
-			tokens.add(wordObj);
+			Token tokenObj = new Token(word);
+			tokenObj.setBeginIndex(beginIndex);
+			tokenObj.setSortingWord(strippedWord);
+			tokens.add(tokenObj);
 			
 			// --> Add clean token
-			Word cleanWordObj = new Word( strippedWord );
+			Token cleanWordObj = new Token( strippedWord );
 			cleanWordObj.setBeginIndex(cleanBeginIndex);
 			cleanTokens.add( cleanWordObj );
 		}
@@ -132,34 +132,34 @@ public class FormattedFile {
 		cleanText += strippedWord + " ";
 		
 		// 5.) Add token to type list
-		WordType savedType = getExistingType( word ); 
+		Type savedType = getExistingType( word );
 		savedType.addOccurrence(fileNumber, tokens.size()-1);
 		
 		// 6.) Add clean token to clean type list
 		if(!strippedWord.isEmpty()) {
-			WordType savedCleanType = getExistingCleanType( strippedWord ); 
+			Type savedCleanType = getExistingCleanType( strippedWord );
 			savedCleanType.addOccurrence(fileNumber, cleanTokens.size()-1);
 		}
 	}
 
-	private WordType getExistingType(String name) {
-		for(WordType type : types) {
+	private Type getExistingType(String name) {
+		for(Type type : types) {
 			if(type.getWord().equals(name)) {
 				return type;
 			}
 		}
-		WordType newType = new WordType(name);
+		Type newType = new Type(name);
 		types.add(newType);
 		return newType;
 	}
 	
-	private WordType getExistingCleanType(String name) {
-		for(WordType type : cleanTypes) {
+	private Type getExistingCleanType(String name) {
+		for(Type type : cleanTypes) {
 			if(type.getWord().equals(name)) {
 				return type;
 			}
 		}
-		WordType newType = new WordType(name);
+		Type newType = new Type(name);
 		cleanTypes.add(newType);
 		return newType;
 	}
@@ -209,19 +209,19 @@ public class FormattedFile {
 		return cleanText;
 	}
 	
-	public List<Word> getTokens() {
+	public List<Token> getTokens() {
 		return tokens;
 	}
 	
-	public List<Word> getCleanTokens() {
+	public List<Token> getCleanTokens() {
 		return cleanTokens;
 	}
 	
-	public List<WordType> getTypes() {
+	public List<Type> getTypes() {
 		return types;
 	}
 	
-	public List<WordType> getCleanTypes() {
+	public List<Type> getCleanTypes() {
 		return cleanTypes;
 	}
 	
@@ -233,12 +233,12 @@ public class FormattedFile {
 		return getAnyContext(cleanTokens, word, wordsBefore, wordsAfter);
 	}
 	
-	private String getAnyContext(List<Word> wordList, int word, int wordsBefore, int wordsAfter) {
-		String result = "["+wordList.get(word).getWord()+"]";
+	private String getAnyContext(List<Token> tokenList, int word, int wordsBefore, int wordsAfter) {
+		String result = "["+ tokenList.get(word).getWord()+"]";
 		
 		for(int i=1;i<=wordsAfter;i++) {
-			if(wordList.size()>((word+i))) {
-				result += " " + wordList.get( word + i ).getWord();
+			if(tokenList.size()>((word+i))) {
+				result += " " + tokenList.get( word + i ).getWord();
 			}
 			else {
 				result += " [EOF]";
@@ -248,7 +248,7 @@ public class FormattedFile {
 		
 		for(int i=(word-1);i>=(word-wordsBefore);i--) {
 			if(i>=0) {
-				result = wordList.get( i ).getWord() + " " + result;
+				result = tokenList.get( i ).getWord() + " " + result;
 			}
 			else {
 				result = "[BOF] "+result;

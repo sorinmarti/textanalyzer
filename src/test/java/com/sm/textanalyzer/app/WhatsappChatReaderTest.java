@@ -4,6 +4,8 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -13,14 +15,18 @@ public class WhatsappChatReaderTest {
 
     @Test
     public void testCreation() throws IOException {
-        List<Token> chatMessages = WhatsappChatReader.readFile(Paths.get("res/test/whatsapp.txt"));
+        List<TokenChain> chatMessages = WhatsappChatReader.readFile(Paths.get("res/test/whatsapp_test.txt"));
         assertEquals( 50, chatMessages.size() );
 
-        Token token = chatMessages.get(7);
-        assertNotNull(token);
+        TokenChain tokenChain = chatMessages.get(7);
+        assertEquals( 2, tokenChain.size() );
+        assertEquals("Dominique Massmünster", tokenChain.getAuthor());
+        assertEquals("27.11.14, 10:43", tokenChain.getDate());
 
-        //assertEquals( token.get);
-        //27.11.14, 10:43 - Dominique Massmünster: Ich nit.
+        Token token1 = tokenChain.getToken( 0 );
+        assertEquals("Ich", token1.getWord() );
 
+        Token token2 = tokenChain.getToken( 1 );
+        assertEquals("nit.", token2.getWord() );
     }
 }

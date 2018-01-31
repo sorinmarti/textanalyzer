@@ -3,12 +3,12 @@ package com.sm.textanalyzer.app;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WordType {
+public class Type {
 
 	private final String word;
 	private final List<Occurrence> occurrences;
 	
-	WordType(String word) {
+	Type(String word) {
 		this.word = word;
 		this.occurrences = new ArrayList<>();
 	}

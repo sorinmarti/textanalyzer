@@ -6,7 +6,7 @@ import java.util.List;
 public class Lemma {
 
 	private final String lemmaName;
-	private final List<WordType> typesOfLemma;
+	private final List<Type> typesOfLemma;
 	
 	Lemma(String name) {
 		this.lemmaName = name;
@@ -17,7 +17,7 @@ public class Lemma {
 		return this.lemmaName;
 	}
 	
-	void addType(WordType type) {
+	void addType(Type type) {
 		this.typesOfLemma.add(type);
 	}
 
@@ -42,7 +42,7 @@ public class Lemma {
 		return lemmaName;
 	}
 
-	public List<WordType> getTypes() {
+	public List<Type> getTypes() {
 		return typesOfLemma;
 	}
 }
