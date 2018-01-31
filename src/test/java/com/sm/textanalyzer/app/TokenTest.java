@@ -4,11 +4,11 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class WordTest {
+public class TokenTest {
 
     @Test
     public void testCreation() {
-        Word word = new Word("word"); //NON-NLS
-        assertEquals("word", word.getWord());
+        Token token = new Token("token"); //NON-NLS
+        assertEquals("token", token.getWord());
     }
 }

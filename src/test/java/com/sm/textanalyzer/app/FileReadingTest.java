@@ -13,7 +13,7 @@ public class FileReadingTest {
     @Test
     public void testFileReading() {
         List<Path> filePaths = FileUtils.collectFilenames("res/test");
-        assertEquals(2, filePaths.size());
+        assertEquals(3, filePaths.size());
         assertEquals(true, filePaths.get(0).endsWith("res/test/test.txt"));
     }
 
@@ -73,10 +73,10 @@ public class FileReadingTest {
         }
 
         // 1.) Number of files
-        assertEquals(2, TextLibrary.getInstance().getNumFiles());
+        assertEquals(3, TextLibrary.getInstance().getNumFiles());
         // 2.) Merge files and check new number of words
         FormattedFile mergedFile = TextLibrary.getInstance().getMergedFile();
-        assertEquals(25, mergedFile.getTokens().size());
+        assertEquals(34005, mergedFile.getTokens().size());
         // 3.) Check word order
         assertEquals("Ein", mergedFile.getTokens().get(0).getWord());        // First word in first file
         assertEquals("Eine", mergedFile.getTokens().get(14).getWord());        // First word in second file

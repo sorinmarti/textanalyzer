@@ -1,6 +1,6 @@
 package com.sm.textanalyzer.gui;
 
-import com.sm.textanalyzer.app.Word;
+import com.sm.textanalyzer.app.Token;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -12,10 +12,10 @@ import java.awt.*;
 
 class TokensListListener implements ListSelectionListener {
 
-	private final JList<Word> twinList;
+	private final JList<Token> twinList;
 	private final JTextArea textAreaToHighlight;
 	
-	TokensListListener(JList<Word> twinList, JTextArea textAreaToHighlight) {
+	TokensListListener(JList<Token> twinList, JTextArea textAreaToHighlight) {
 		this.twinList = twinList;
 		this.textAreaToHighlight = textAreaToHighlight;
 	}
@@ -23,18 +23,18 @@ class TokensListListener implements ListSelectionListener {
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
 		@SuppressWarnings("unchecked")
-		JList<Word> list = (JList<Word>)e.getSource();
+		JList<Token> list = (JList<Token>)e.getSource();
 		int selectedIndex =  list.getSelectedIndex();
 		twinList.setSelectedIndex(selectedIndex);
 		twinList.ensureIndexIsVisible(selectedIndex);
 		
 		Highlighter h = textAreaToHighlight.getHighlighter();
-		Word word = list.getSelectedValue();
+		Token token = list.getSelectedValue();
 		h.removeAllHighlights();
 		try {
-			//System.out.println("Highlight: "+word.getBeginIndex()+"/"+ (word.getBeginIndex()+word.getWord().length()));
-			h.addHighlight(word.getBeginIndex(), word.getBeginIndex()+word.getWord().length(), DefaultHighlighter.DefaultPainter);
-			 Rectangle viewRect = textAreaToHighlight.modelToView(word.getBeginIndex());
+			//System.out.println("Highlight: "+token.getBeginIndex()+"/"+ (token.getBeginIndex()+token.getWord().length()));
+			h.addHighlight(token.getBeginIndex(), token.getBeginIndex()+ token.getWord().length(), DefaultHighlighter.DefaultPainter);
+			 Rectangle viewRect = textAreaToHighlight.modelToView(token.getBeginIndex());
 			 textAreaToHighlight.scrollRectToVisible(viewRect);
 		} catch (BadLocationException e1) {
 			e1.printStackTrace();

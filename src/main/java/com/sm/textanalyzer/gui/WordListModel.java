@@ -1,22 +1,22 @@
 package com.sm.textanalyzer.gui;
 
-import com.sm.textanalyzer.app.Word;
+import com.sm.textanalyzer.app.Token;
 
 import javax.swing.*;
 import java.util.Comparator;
 import java.util.List;
 
-class WordListModel extends AbstractListModel<Word> implements ListModel<Word> {
+class WordListModel extends AbstractListModel<Token> implements ListModel<Token> {
 
-	private final List<Word> list;
+	private final List<Token> list;
 	
-	WordListModel(List<Word> list) {
+	WordListModel(List<Token> list) {
 		super();
 		this.list = list;
 	}
 	
 	@Override
-	public Word getElementAt(int index) {
+	public Token getElementAt(int index) {
 		return list.get(index);
 	}
 
@@ -26,12 +26,12 @@ class WordListModel extends AbstractListModel<Word> implements ListModel<Word> {
 	}
 	
 	void sortName(){
-	    list.sort(Comparator.comparing(Word::getSortingWord));
+	    list.sort(Comparator.comparing(Token::getSortingWord));
 	    fireContentsChanged(this, 0, list.size()-1);
 	}
 	
 	void sortOriginal(){
-	    list.sort(Comparator.comparingInt(Word::getBeginIndex));
+	    list.sort(Comparator.comparingInt(Token::getBeginIndex));
 	    fireContentsChanged(this, 0, list.size()-1);
 	}
 }

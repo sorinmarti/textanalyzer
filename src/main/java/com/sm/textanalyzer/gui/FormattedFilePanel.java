@@ -24,8 +24,8 @@ class FormattedFilePanel extends JPanel {
     private final JList<Lemma> lemmaList = new JList<>();
     private final JTable lemmaTable = new JTable();
     private final JTable nTypesTable = new JTable();
-    private final JList<Word> nTokensList = new JList<>();
-    private final JList<Word> tokensList = new JList<>();
+    private final JList<Token> nTokensList = new JList<>();
+    private final JList<Token> tokensList = new JList<>();
     private final JTextArea originalTextArea = new JTextArea();
     private final JTextArea cleanTextArea = new JTextArea();
     private final JTextArea resultTextArea = new JTextArea();
@@ -194,7 +194,7 @@ class FormattedFilePanel extends JPanel {
 		JButton btn = new JButton(resourceBundle.getString("occurrences"));
 		btn.addActionListener(e -> {
             StringBuilder foundString = new StringBuilder();
-            WordType word = lemmaTableModel.getWordTypeAt( sorter.convertRowIndexToModel(lemmaTable.getSelectedRow()) );
+            Type word = lemmaTableModel.getWordTypeAt( sorter.convertRowIndexToModel(lemmaTable.getSelectedRow()) );
             for(Occurrence o : word.getOccurrences()) {
                 FormattedFile file = TextLibrary.getInstance().getFile(o.getFile());
                 String s = file.getFilename()+":"+ file.getContext(o.getToken(), 5, 5);
@@ -256,7 +256,7 @@ class FormattedFilePanel extends JPanel {
 	}
 
 
-	private JPanel createListPanel(String title, JList<Word> list, WordListModel listModel, ListSelectionListener listener) {
+	private JPanel createListPanel(String title, JList<Token> list, WordListModel listModel, ListSelectionListener listener) {
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.setBorder(BorderFactory.createTitledBorder(title));
 		
@@ -345,7 +345,7 @@ class FormattedFilePanel extends JPanel {
 		JTextField tokensAfter = new JTextField("3", 5);
 		btn.addActionListener(e -> {
             StringBuilder foundString = new StringBuilder();
-            WordType word = tableModel.getWordTypeAt( sorter.convertRowIndexToModel(table.getSelectedRow()) );
+            Type word = tableModel.getWordTypeAt( sorter.convertRowIndexToModel(table.getSelectedRow()) );
             for(Occurrence o : word.getOccurrences()) {
                 FormattedFile file = TextLibrary.getInstance().getFile(o.getFile());
                 String s = file.getFilename()+":"+ file.getContext(o.getToken(), Integer.valueOf(tokensBefore.getText()), Integer.valueOf(tokensAfter.getText()));

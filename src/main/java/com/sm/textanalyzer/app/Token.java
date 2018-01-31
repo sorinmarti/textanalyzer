@@ -1,20 +1,20 @@
 package com.sm.textanalyzer.app;
 
-public class Word {
+public class Token {
 
 	private final String word;
 	private int beginIndex = 0;
 	private String sortingWord;
 	
-	Word(String word) {
+	Token(String word) {
 		this.word = word;
 		this.sortingWord = word;
 	}
 	
-	Word(Word word) {
-		this.word = word.getWord();
-		this.beginIndex = word.getBeginIndex();
-		this.sortingWord = word.getSortingWord();
+	Token(Token token) {
+		this.word = token.getWord();
+		this.beginIndex = token.getBeginIndex();
+		this.sortingWord = token.getSortingWord();
 	}
 	
 	public String getWord() {
