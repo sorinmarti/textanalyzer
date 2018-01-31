@@ -76,7 +76,7 @@ public class FileReadingTest {
         assertEquals(3, TextLibrary.getInstance().getNumFiles());
         // 2.) Merge files and check new number of words
         FormattedFile mergedFile = TextLibrary.getInstance().getMergedFile();
-        assertEquals(34005, mergedFile.getTokens().size());
+        assertEquals(388, mergedFile.getTokens().size());
         // 3.) Check word order
         assertEquals("Ein", mergedFile.getTokens().get(0).getWord());        // First word in first file
         assertEquals("Eine", mergedFile.getTokens().get(14).getWord());        // First word in second file
