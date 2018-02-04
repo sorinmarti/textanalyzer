@@ -81,4 +81,9 @@ public class CorpusFile implements TreeNode {
     public Enumeration children() {
         return Collections.enumeration( tokenChains );
     }
+
+    @Override
+    public String toString() {
+        return this.name;
+    }
 }

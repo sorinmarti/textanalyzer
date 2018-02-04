@@ -77,4 +77,9 @@ public class CorpusCollection implements TreeNode {
     public Enumeration children() {
         return Collections.enumeration( corpusFiles );
     }
+
+    @Override
+    public String toString() {
+        return this.collectionName;
+    }
 }

@@ -68,4 +68,9 @@ public class Corpus implements TreeNode {
     public Enumeration children() {
         return Collections.enumeration( collections );
     }
+
+    @Override
+    public String toString() {
+        return this.name;
+    }
 }

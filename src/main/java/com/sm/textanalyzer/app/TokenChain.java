@@ -79,4 +79,17 @@ public class TokenChain implements TreeNode {
     public Enumeration children() {
         return null;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        for(Token t : tokens) {
+            builder.append(t.getWord()).append(" ");
+            if(builder.length()>20) {
+                builder.append("...");
+                break;
+            }
+        }
+        return builder.toString();
+    }
 }

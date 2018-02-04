@@ -1,11 +1,13 @@
 package com.sm.textanalyzer;
 
+import com.sm.textanalyzer.app.Project;
+import com.sm.textanalyzer.app.TextLibrary;
 import com.sm.textanalyzer.gui.AnalyzerWindow;
+import com.sm.textanalyzer.gui.ProjectTreeComponent;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.Locale;
-import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 public class MainClass {
@@ -25,6 +27,8 @@ public class MainClass {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+
+        TextLibrary.getInstance().setProjectFile( new Project() );
 		
 		EventQueue.invokeLater(() -> {
             try {
@@ -34,6 +38,14 @@ public class MainClass {
                 e.printStackTrace();
             }
         });
+
+        JFrame frame = new JFrame("ProjectTreeComponent");
+        ProjectTreeComponent comp = new ProjectTreeComponent();
+        comp.setData(new Project());
+        frame.setContentPane(comp.contentPane);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.pack();
+        frame.setVisible(true);
 	}
 
     public static ResourceBundle getResourceBundle() {
