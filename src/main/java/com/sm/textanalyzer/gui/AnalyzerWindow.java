@@ -18,7 +18,8 @@ public class AnalyzerWindow extends JFrame {
 
     static final String XML = "xml"; //NON-NLS
     static final String TXT = "txt"; //NON-NLS
-    static final String RES_IMG_TAB_CORPUS_PNG = "res/img/tab_corpus.png"; //NON-NLS
+
+	static final String RES_IMG_TAB_CORPUS_PNG = "res/img/tab_corpus.png"; //NON-NLS
     static final String RES_IMG_TAB_PROJECT_PNG = "res/img/tab_project.png"; //NON-NLS
     static final String RES_IMG_TAB_LEMMAS_PNG = "res/img/tab_lemmas.png"; //NON-NLS
 
@@ -26,7 +27,6 @@ public class AnalyzerWindow extends JFrame {
 
 	private JMenuItem menuItemProjectSave;
 	private JMenuItem menuItemProjectSaveAs;
-	//private JMenu mnuEdit;
 	
 	// TABS
 	private final JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);

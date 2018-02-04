@@ -6,7 +6,6 @@ import com.sm.textanalyzer.app.*;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.List;
@@ -31,6 +30,7 @@ class TabProjectPanel extends JPanel {
 			JLabel lblNoProject = new JLabel(resourceBundle.getString("no.open.project.create.or.open.a.project.to.continue"));
 			add( lblNoProject );
 		}
+		// There is an opened project:
 		else {
 			setLayout( new BorderLayout() );
 			
@@ -52,7 +52,10 @@ class TabProjectPanel extends JPanel {
 			final JButton btnLemma = new JButton(resourceBundle.getString("load.lemma.library1"));
 			
 			pnlFiles.setBorder( BorderFactory.createTitledBorder(resourceBundle.getString("added.corpus.paths")) );
-			JList<Path> addedPathsList = new JList<>();
+			// Root: project.getCorpus()
+			JTree addedPathsTree = new JTree( project.getCorpus() );
+
+			/*
 			addedPathsList.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
 			addedPathsList.setModel(new PathListModel( project.getProjectTextFiles() ));
 			addedPathsList.setCellRenderer((list, value, index, isSelected, cellHasFocus) -> {
@@ -69,8 +72,8 @@ class TabProjectPanel extends JPanel {
                     lblPath.setText( addedPathsList.getSelectedValue().toAbsolutePath().toString() );
                 }
             });
-			
-			JScrollPane listScrollPane = new JScrollPane( addedPathsList );
+			*/
+			JScrollPane listScrollPane = new JScrollPane( addedPathsTree );
 			listScrollPane.setMinimumSize( new Dimension(200, 350));
 			listScrollPane.setPreferredSize( new Dimension(200, 350));
 			pnlFiles.add( listScrollPane, BorderLayout.WEST );
@@ -95,7 +98,20 @@ class TabProjectPanel extends JPanel {
 			c.gridx = 1; c.gridy = 0; c.gridwidth = 1; c.gridheight = 1;
 			c.weightx = .6f; c.fill = GridBagConstraints.BOTH;
 			panel.add(lblPath, c);
-			
+
+            JButton btnAddCollection = new JButton("Add collection");
+            btnAddCollection.addActionListener(e -> {
+               System.out.println( "NIY: Add a Collection");
+            });
+            c.gridx = 0; c.gridy = 1; c.gridwidth = 1; c.gridheight = 1;
+            c.weightx = .4f; c.fill = GridBagConstraints.BOTH;
+            panel.add(btnAddCollection, c);
+
+            JLabel lbl2 = new JLabel("Adds a new collection to the corpus.");
+            c.gridx = 1; c.gridy = 1; c.gridwidth = 1; c.gridheight = 1;
+            c.weightx = .6f; c.fill = GridBagConstraints.BOTH;
+            panel.add(lbl2, c);
+
 			JButton btnAdd = new JButton(resourceBundle.getString("add.new.path"));
 			btnAdd.addActionListener(e -> {
                 File file = parent.showOpenDialog(resourceBundle.getString("open.corpus.path"), resourceBundle.getString("no.corpus.file.selected"), parent.textFileFilter, false);
@@ -107,18 +123,18 @@ class TabProjectPanel extends JPanel {
                         parent.showMessage(resourceBundle.getString("the.file.already.exists.in.the.project"));
                     }
                     else {
-                        TextLibrary.getInstance().getProjectFile().addProjectTextFile( file.toPath() );
+                        // TODO project.getCorpus().getCollection( 0 ).addFile( new CorpusFile( "Name", file.toPath() ) );
                         btnLemma.setEnabled( true );	// At least one file is present: activate lemma library
                         parent.projectHasChanged();
                     }
                 }
             });
-			c.gridx = 0; c.gridy = 1; c.gridwidth = 1; c.gridheight = 1;
+			c.gridx = 0; c.gridy = 2; c.gridwidth = 1; c.gridheight = 1;
 			c.weightx = .4f; c.fill = GridBagConstraints.BOTH;
 			panel.add(btnAdd, c);
 			
 			JLabel lbl3 = new JLabel(resourceBundle.getString("adds.a.new.file.for.analysis.to.the.project"));
-			c.gridx = 1; c.gridy = 1; c.gridwidth = 1; c.gridheight = 1;
+			c.gridx = 1; c.gridy = 2; c.gridwidth = 1; c.gridheight = 1;
 			c.weightx = .6f; c.fill = GridBagConstraints.BOTH;
 			panel.add(lbl3, c);
 			
@@ -142,7 +158,7 @@ class TabProjectPanel extends JPanel {
                             }
                             else {
                                 addedFiles++;
-                                TextLibrary.getInstance().getProjectFile().addProjectTextFile( p );
+                                //TODO TextLibrary.getInstance().getProjectFile().addProjectTextFile( p );
                             }
                         }
                         if(addedFiles>0) {
@@ -155,34 +171,35 @@ class TabProjectPanel extends JPanel {
                     }
                 }
             });
-			c.gridx = 0; c.gridy = 2; c.gridwidth = 1; c.gridheight = 1;
+			c.gridx = 0; c.gridy = 3; c.gridwidth = 1; c.gridheight = 1;
 			c.weightx = .4f; c.fill = GridBagConstraints.BOTH;
 			panel.add(btnAddFolder, c);
 			
 			JLabel lbl7 = new JLabel(resourceBundle.getString("adds.new.files.for.analysis"));
-			c.gridx = 1; c.gridy = 2; c.gridwidth = 1; c.gridheight = 1;
+			c.gridx = 1; c.gridy = 3; c.gridwidth = 1; c.gridheight = 1;
 			c.weightx = .6f; c.fill = GridBagConstraints.BOTH;
 			panel.add(lbl7, c);
 			
 			// Btn del
 			btnDel.setEnabled( false );
 			btnDel.addActionListener(e -> {
-
+                /*
                 //TextLibrary.getInstance().getProjectFile().removeProjectTextFile( addedPathsList.getSelectedValue() );
-                ((PathListModel) addedPathsList.getModel()).removePath( addedPathsList.getSelectedValue() );
-                addedPathsList.clearSelection();
-                if(addedPathsList.getModel().getSize()==0) {
+                ((PathListModel) addedPathsTree.getModel()).removePath( addedPathsTree.getSelectedValue() );
+                addedPathsTree.clearSelection();
+                if(addedPathsTree.getModel().getSize()==0) {
                     btnLemma.setEnabled( false );
                 }
+                */
                 lblPath.setText( "" );
                 btnDel.setEnabled(false);
             });
-			c.gridx = 0; c.gridy = 3; c.gridwidth = 1; c.gridheight = 1;
+			c.gridx = 0; c.gridy = 4; c.gridwidth = 1; c.gridheight = 1;
 			c.weightx = .4f; c.fill = GridBagConstraints.BOTH;
 			panel.add(btnDel, c);
 			
 			JLabel lbl4 = new JLabel(resourceBundle.getString("deletes.the.selected.path.from.the.project"));
-			c.gridx = 1; c.gridy = 3; c.gridwidth = 1; c.gridheight = 1;
+			c.gridx = 1; c.gridy = 4; c.gridwidth = 1; c.gridheight = 1;
 			c.weightx = .6f; c.fill = GridBagConstraints.BOTH;
 			panel.add(lbl4, c);
 			
@@ -201,12 +218,12 @@ class TabProjectPanel extends JPanel {
                     }
                 }
             });
-			c.gridx = 0; c.gridy = 4; c.gridwidth = 1; c.gridheight = 1;
+			c.gridx = 0; c.gridy = 5; c.gridwidth = 1; c.gridheight = 1;
 			c.weightx = .4f; c.fill = GridBagConstraints.BOTH;
 			panel.add(btnLemma, c);
 			
 			JLabel lbl5 = new JLabel(resourceBundle.getString("loads.a.lemma.library"));
-			c.gridx = 1; c.gridy = 4; c.gridwidth = 1; c.gridheight = 1;
+			c.gridx = 1; c.gridy = 5; c.gridwidth = 1; c.gridheight = 1;
 			c.weightx = .6f; c.fill = GridBagConstraints.BOTH;
 			panel.add(lbl5, c);
 			
@@ -223,7 +240,8 @@ class TabProjectPanel extends JPanel {
 
                 new Thread(() -> {
                     TextLibrary.getInstance().resetFormattedFiles();
-
+                    //TODO
+                    /*
                     for(Path path : TextLibrary.getInstance().getProjectFile().getProjectTextFiles()) {
                         FormattedFile file = new FormattedFile(path);
                         file.setFileNumber(TextLibrary.getInstance().getFileNumber());
@@ -236,6 +254,7 @@ class TabProjectPanel extends JPanel {
                         lbl.setText(String.format(resourceBundle.getString("reading.file.s.done"), file.getFilename()));
                         TextLibrary.getInstance().addFile( file );
                     }
+                    */
 
                     lbl.setText(resourceBundle.getString("get.merged.file"));
                     TextLibrary.getInstance().getMergedFile();
@@ -250,12 +269,12 @@ class TabProjectPanel extends JPanel {
 
                 dialog.setVisible(true);
             });
-			c.gridx = 0; c.gridy = 5; c.gridwidth = 1; c.gridheight = 1;
+			c.gridx = 0; c.gridy = 6; c.gridwidth = 1; c.gridheight = 1;
 			c.weightx = .4f; c.fill = GridBagConstraints.BOTH;
 			panel.add(btnRead, c);
 			
 			JLabel lbl6 = new JLabel(resourceBundle.getString("reads.the.added.paths.and.analyzes.them"));
-			c.gridx = 1; c.gridy = 5; c.gridwidth = 1; c.gridheight = 1;
+			c.gridx = 1; c.gridy = 6; c.gridwidth = 1; c.gridheight = 1;
 			c.weightx = .6f; c.fill = GridBagConstraints.BOTH;
 			panel.add(lbl6, c);
 			

@@ -17,7 +17,6 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,11 +44,13 @@ public class ProjectFileManager {
 	        Element pathsNode = doc.createElement("paths");
 	        root.appendChild(pathsNode);
 
+	        /* TODO
 	        for (Path dtl : project.getProjectTextFiles()) {
 	            Element pathNode = doc.createElement("path");
 	            pathNode.appendChild(doc.createTextNode( dtl.toString() ));
 	            pathsNode.appendChild(pathNode);
 	        }
+			 */
 	        
 	        Element lemmaLibraryNode = doc.createElement("lemmalibrary");
 	        lemmaLibraryNode.appendChild( doc.createTextNode( project.getLemmaFileName().toString() ));
@@ -110,7 +111,7 @@ public class ProjectFileManager {
 				if (nLemmaNode.getNodeType() == Node.ELEMENT_NODE) {
 					Element lemmaElement = (Element) nLemmaNode;
 					String name = lemmaElement.getTextContent();
-					project.addProjectTextFile( Paths.get(name) );
+					//TODO project.addProjectTextFile( Paths.get(name) );
 				}
 			}
 			

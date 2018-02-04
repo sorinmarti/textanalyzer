@@ -2,7 +2,6 @@ package com.sm.textanalyzer.app;
 
 import com.sm.textanalyzer.MainClass;
 
-import java.nio.file.Path;
 import java.util.*;
 
 public class TextLibrary {
@@ -37,9 +36,6 @@ public class TextLibrary {
 
 	public void setProjectFile(Project projectFile) {
 		this.projectFile = projectFile;
-		for(Path p : projectFile.getProjectTextFiles()) {
-			System.out.println( p.toString() );
-		}
 	}
 	
 	public void addFile(FormattedFile file) {

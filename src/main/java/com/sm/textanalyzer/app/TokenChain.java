@@ -1,15 +1,19 @@
 package com.sm.textanalyzer.app;
 
+import javax.swing.tree.TreeNode;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
-public class TokenChain {
+public class TokenChain implements TreeNode {
 
+    private CorpusFile parent;
     private List<Token> tokens;
     private String author;
     private String date;
 
-    TokenChain() {
+    TokenChain(CorpusFile parent) {
+        this.parent = parent;
         tokens = new ArrayList<>();
     }
 
@@ -39,5 +43,40 @@ public class TokenChain {
 
     public int getNumTokens() {
         return tokens.size();
+    }
+
+    @Override
+    public TreeNode getChildAt(int childIndex) {
+        return null;
+    }
+
+    @Override
+    public int getChildCount() {
+        return 0;
+    }
+
+    @Override
+    public TreeNode getParent() {
+        return parent;
+    }
+
+    @Override
+    public int getIndex(TreeNode node) {
+        return 0;
+    }
+
+    @Override
+    public boolean getAllowsChildren() {
+        return false;
+    }
+
+    @Override
+    public boolean isLeaf() {
+        return true;
+    }
+
+    @Override
+    public Enumeration children() {
+        return null;
     }
 }

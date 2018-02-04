@@ -4,20 +4,17 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Stream;
 
-public class WhatsappChatReader {
+public class WhatsappChatReader implements CorpusFileReader {
 
-
-    public static List<TokenChain> readFile(Path savedSource) throws IOException {
-        List<TokenChain> chatLines = new ArrayList<>();
+    public CorpusFile readFile(String name, Path savedSource) throws IOException {
+        CorpusFile file = new CorpusFile(null, name, savedSource);      // TODO
 
         try (Stream<String> stream = Files.lines(savedSource, StandardCharsets.UTF_8)) {
             stream.forEach((string) -> {
                 //27.11.14, 10:43 - Dominique Massmünster: Ich nit.
-                TokenChain chain = new TokenChain();
+                TokenChain chain = file.addTokenChain();
                 String[] parts;
 
                 parts = string.split(" - ");
@@ -36,12 +33,9 @@ public class WhatsappChatReader {
                 for(String part : parts) {
                     chain.addToken( new Token( part ));
                 }
-
-                chatLines.add(chain);
             });
         }
-
-        return chatLines;
+        return file;
     }
 
 }
