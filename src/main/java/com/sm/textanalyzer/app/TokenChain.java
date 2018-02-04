@@ -13,10 +13,6 @@ public class TokenChain {
         tokens = new ArrayList<>();
     }
 
-    public int size() {
-        return tokens.size();
-    }
-
     public String getAuthor() {
         return author;
     }
@@ -39,5 +35,9 @@ public class TokenChain {
 
     public void addToken(Token token) {
         tokens.add(token);
+    }
+
+    public int getNumTokens() {
+        return tokens.size();
     }
 }

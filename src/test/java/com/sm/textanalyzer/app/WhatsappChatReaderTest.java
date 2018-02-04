@@ -19,7 +19,7 @@ public class WhatsappChatReaderTest {
         assertEquals( 50, chatMessages.size() );
 
         TokenChain tokenChain = chatMessages.get(7);
-        assertEquals( 2, tokenChain.size() );
+        assertEquals( 2, tokenChain.getNumTokens() );
         assertEquals("Dominique Massmünster", tokenChain.getAuthor());
         assertEquals("27.11.14, 10:43", tokenChain.getDate());
 
