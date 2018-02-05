@@ -1,32 +1,27 @@
 package com.sm.textanalyzer.app;
 
-import javax.swing.tree.TreeNode;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
 
-public class CorpusCollection implements TreeNode {
+public class CorpusCollection {
 
-    private Corpus parent;
     private String collectionName;
     private List<CorpusFile> corpusFiles;
 
-    CorpusCollection(Corpus parent, String collectionName) {
-        this.parent = parent;
+    public CorpusCollection(String collectionName) {
         this.collectionName = collectionName;
         corpusFiles = new ArrayList<>();
     }
 
     public CorpusFile addFile(String name) {
-        CorpusFile file = new CorpusFile(this, name);
+        CorpusFile file = new CorpusFile( name);
         corpusFiles.add( file );
         return file;
     }
 
     public CorpusFile addFile(String name, Path path) {
-        CorpusFile file = new CorpusFile(this, name, path);
+        CorpusFile file = new CorpusFile( name, path);
         corpusFiles.add( file );
         return file;
     }
@@ -44,42 +39,11 @@ public class CorpusCollection implements TreeNode {
     }
 
     @Override
-    public TreeNode getChildAt(int childIndex) {
-        return corpusFiles.get( childIndex );
-    }
-
-    @Override
-    public int getChildCount() {
-        return corpusFiles.size();
-    }
-
-    @Override
-    public TreeNode getParent() {
-        return parent;
-    }
-
-    @Override
-    public int getIndex(TreeNode node) {
-        return corpusFiles.indexOf( node );
-    }
-
-    @Override
-    public boolean getAllowsChildren() {
-        return true;
-    }
-
-    @Override
-    public boolean isLeaf() {
-        return corpusFiles.size()==0;
-    }
-
-    @Override
-    public Enumeration children() {
-        return Collections.enumeration( corpusFiles );
-    }
-
-    @Override
     public String toString() {
         return this.collectionName;
+    }
+
+    public int getFileIndex(CorpusFile child) {
+        return corpusFiles.indexOf( child );
     }
 }

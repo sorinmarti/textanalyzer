@@ -56,7 +56,7 @@ class TabProjectPanel extends JPanel {
 			final JButton btnLemma = new JButton(resourceBundle.getString("load.lemma.library1"));
 			
 			pnlFiles.setBorder( BorderFactory.createTitledBorder(resourceBundle.getString("added.corpus.paths")) );
-			JTree addedPathsTree = new JTree( project.getCorpus() );
+			JTree addedPathsTree = new JTree( );  //project.getCorpus(
             addedPathsTree.addTreeSelectionListener(e -> {
                 Object component = e.getPath().getLastPathComponent();
                 if(component instanceof Corpus) {

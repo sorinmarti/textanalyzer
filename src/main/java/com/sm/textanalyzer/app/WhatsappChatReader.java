@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 public class WhatsappChatReader implements CorpusFileReader {
 
     public CorpusFile readFile(String name, Path savedSource) throws IOException {
-        CorpusFile file = new CorpusFile(null, name, savedSource);      // TODO
+        CorpusFile file = new CorpusFile(name, savedSource);      // TODO
 
         try (Stream<String> stream = Files.lines(savedSource, StandardCharsets.UTF_8)) {
             stream.forEach((string) -> {

@@ -1,12 +1,9 @@
 package com.sm.textanalyzer.app;
 
-import javax.swing.tree.TreeNode;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
 
-public class Corpus implements TreeNode {
+public class Corpus {
 
     private String name;
     private List<CorpusCollection> collections;
@@ -16,10 +13,13 @@ public class Corpus implements TreeNode {
         collections = new ArrayList<>();
     }
 
-    public CorpusCollection addCollection(String collection) {
-        CorpusCollection fc = new CorpusCollection(this, collection);
+    public void addCollection(String collection) {
+        CorpusCollection fc = new CorpusCollection(collection);
         collections.add( fc );
-        return fc;
+    }
+
+    public void addCollection(CorpusCollection collection) {
+        collections.add( collection );
     }
 
     public String getName() {
@@ -35,42 +35,19 @@ public class Corpus implements TreeNode {
     }
 
     @Override
-    public TreeNode getChildAt(int childIndex) {
-        return collections.get(childIndex);
-    }
-
-    @Override
-    public int getChildCount() {
-        return collections.size();
-    }
-
-    @Override
-    public TreeNode getParent() {
-        return null;
-    }
-
-    @Override
-    public int getIndex(TreeNode node) {
-        return collections.indexOf( node );
-    }
-
-    @Override
-    public boolean getAllowsChildren() {
-        return true;
-    }
-
-    @Override
-    public boolean isLeaf() {
-        return collections.size()==0;
-    }
-
-    @Override
-    public Enumeration children() {
-        return Collections.enumeration( collections );
-    }
-
-    @Override
     public String toString() {
         return this.name;
+    }
+
+    public int getCollectionIndex(CorpusCollection child) {
+        return collections.indexOf( child );
+    }
+
+    public void removeCollection(CorpusCollection collection) {
+        collections.remove(collection);
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

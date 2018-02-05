@@ -1,25 +1,20 @@
 package com.sm.textanalyzer.app;
 
-import javax.swing.tree.TreeNode;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
 
-public class CorpusFile implements TreeNode {
+public class CorpusFile {
 
-    private CorpusCollection parent;
     private String name;
     private Path originalSavePath;
     private List<TokenChain> tokenChains;
 
-    public CorpusFile(CorpusCollection parent, String name) {
-        this(parent, name, null);
+    public CorpusFile(String name) {
+        this(name, null);
     }
 
-    public CorpusFile(CorpusCollection parent, String name, Path savePath) {
-        this.parent = parent;
+    public CorpusFile(String name, Path savePath) {
         this.name = name;
         this.originalSavePath = savePath;
         tokenChains = new ArrayList<>();
@@ -45,41 +40,6 @@ public class CorpusFile implements TreeNode {
 
     public TokenChain getTokenChain(int index) {
         return tokenChains.get( index );
-    }
-
-    @Override
-    public TreeNode getChildAt(int childIndex) {
-        return tokenChains.get( childIndex );
-    }
-
-    @Override
-    public int getChildCount() {
-        return tokenChains.size();
-    }
-
-    @Override
-    public TreeNode getParent() {
-        return parent;
-    }
-
-    @Override
-    public int getIndex(TreeNode node) {
-        return tokenChains.indexOf( node );
-    }
-
-    @Override
-    public boolean getAllowsChildren() {
-        return true;
-    }
-
-    @Override
-    public boolean isLeaf() {
-        return tokenChains.size()==0;
-    }
-
-    @Override
-    public Enumeration children() {
-        return Collections.enumeration( tokenChains );
     }
 
     @Override
