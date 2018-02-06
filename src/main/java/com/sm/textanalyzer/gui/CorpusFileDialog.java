@@ -1,32 +1,45 @@
 package com.sm.textanalyzer.gui;
 
-import com.sm.textanalyzer.app.CorpusCollection;
+import com.sm.textanalyzer.app.Author;
+import com.sm.textanalyzer.app.CorpusFile;
 import com.sm.textanalyzer.app.CorpusFileType;
 
 import javax.swing.*;
 import javax.swing.event.ListDataListener;
-import java.awt.event.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
-public class CollectionDialog extends JDialog {
+public class CorpusFileDialog extends JDialog {
     static final int CANCEL = 0;
     static final int OK = 1;
 
-    private CorpusCollection collection;
+    private CorpusFile file;
     private int closeAction;
+    private AuthorDialog authorDialog;
 
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
-    private JTextField textField1;
+    private JComboBox languageComboBox;
+    private JComboBox fileTypeComboBox;
+    private JTextField textFieldName;
+    private JLabel lblFilePath;
+    private JLabel lblSelectedAuthor;
+    private JButton deleteAuthorButton;
+    private JButton createNewAuthorButton;
     private JComboBox comboBox1;
-    private JButton setAuthorForAllButton;
 
-    public CollectionDialog() {
+    public CorpusFileDialog() {
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
 
-        comboBox1.setModel(new ComboBoxModel<CorpusFileType>() {
+        authorDialog = new AuthorDialog();
+        authorDialog.pack();
+        authorDialog.setLocationRelativeTo( contentPane );
+
+        fileTypeComboBox.setModel(new ComboBoxModel<CorpusFileType>() {
 
             CorpusFileType selected;
 
@@ -64,14 +77,20 @@ public class CollectionDialog extends JDialog {
             @Override
             public void removeListDataListener(ListDataListener l) {}
         });
-        comboBox1.setRenderer((ListCellRenderer<CorpusFileType>) (list, value, index, isSelected, cellHasFocus) -> {
+        fileTypeComboBox.setRenderer((ListCellRenderer<CorpusFileType>) (list, value, index, isSelected, cellHasFocus) -> {
             DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
             JLabel item = (JLabel) defaultRenderer.getListCellRendererComponent(list,value,index,isSelected,cellHasFocus);
-            item.setText( value.getName() );
+            if(value==CorpusFileType.ALL) {
+                item.setText("undefined");
+            }
+            else {
+                item.setText(value.getName());
+            }
             return item;
         });
 
         buttonOK.addActionListener(e -> onOK());
+
         buttonCancel.addActionListener(e -> onCancel());
 
         // call onCancel() when cross is clicked
@@ -83,16 +102,30 @@ public class CollectionDialog extends JDialog {
         });
 
         // call onCancel() on ESCAPE
-        contentPane.registerKeyboardAction(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
+        contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+
+        createNewAuthorButton.addActionListener(e -> {
+            Author author = file.getAuthor();
+            if(author==null) {
+                author = new Author("Select a name");
             }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+            authorDialog.setAuthor( author );
+            authorDialog.setVisible(true);
+            if(authorDialog.getCloseAction()==AuthorDialog.OK) {
+                file.setAuthor( author );
+                lblSelectedAuthor.setText(author.getName());
+            }
+        });
+        deleteAuthorButton.addActionListener(e -> {
+            file.setAuthor( null );
+            lblSelectedAuthor.setText("");
+        });
     }
 
     private void onOK() {
-        collection.setName( textField1.getText() );
-        collection.setAcceptedType( (CorpusFileType) comboBox1.getSelectedItem() );
+        file.setName(textFieldName.getText());
+        file.setFileType( (CorpusFileType)fileTypeComboBox.getSelectedItem() );
+        //TODO Language
         closeAction = OK;
         dispose();
     }
@@ -102,10 +135,15 @@ public class CollectionDialog extends JDialog {
         dispose();
     }
 
-    public void setCorpusCollection(CorpusCollection collection) {
-        this.collection = collection;
-        textField1.setText( collection.getName() );
-        comboBox1.setSelectedItem( collection.getAcceptedType() );
+    public void setFile(CorpusFile file) {
+        lblFilePath.setText( file.getPath().toString() );
+        textFieldName.setText( file.getName() );
+        fileTypeComboBox.setSelectedItem( file.getFileType() );
+        // TODO Language
+        if(file.getAuthor()!=null) {
+            lblSelectedAuthor.setText(file.getAuthor().getName());
+        }
+        this.file = file;
     }
 
     public int getCloseAction() {

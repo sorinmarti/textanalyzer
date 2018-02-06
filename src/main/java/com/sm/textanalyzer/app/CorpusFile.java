@@ -7,6 +7,8 @@ import java.util.List;
 public class CorpusFile {
 
     private String name;
+    private CorpusFileType fileType;
+    private Author author;
     private Path originalSavePath;
     private List<TokenChain> tokenChains;
 
@@ -16,6 +18,7 @@ public class CorpusFile {
 
     public CorpusFile(String name, Path savePath) {
         this.name = name;
+        this.fileType = CorpusFileType.ALL;
         this.originalSavePath = savePath;
         tokenChains = new ArrayList<>();
     }
@@ -53,5 +56,25 @@ public class CorpusFile {
 
     public String getName() {
         return name;
+    }
+
+    public void setAuthor(Author author) {
+        this.author = author;
+    }
+
+    public Author getAuthor() {
+        return author;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public CorpusFileType getFileType() {
+        return fileType;
+    }
+
+    public void setFileType(CorpusFileType fileType) {
+        this.fileType = fileType;
     }
 }

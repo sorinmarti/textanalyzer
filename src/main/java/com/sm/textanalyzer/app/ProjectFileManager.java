@@ -58,6 +58,17 @@ public class ProjectFileManager {
                 corpusNode.appendChild( collectionNode );
             }
 
+            Element authorsNode = doc.createElement("authors");
+	        for(Author author : project.getAuthors()) {
+                Element authorNode = doc.createElement("author");
+                authorNode.setAttribute("name", author.getName());
+                authorNode.setAttribute("ageMin", String.valueOf(author.getAgeMin()));
+                authorNode.setAttribute("ageMax", String.valueOf(author.getAgeMax()));
+                authorNode.setAttribute("gender", String.valueOf(author.getGender()));
+                authorsNode.appendChild(authorNode);
+	        }
+            root.appendChild(authorsNode);
+
 	        // Save the document to the disk file
 	        TransformerFactory tranFactory = TransformerFactory.newInstance();
 	        Transformer aTransformer = tranFactory.newTransformer();
@@ -109,10 +120,9 @@ public class ProjectFileManager {
 			Node corpusNode = doc.getElementsByTagName("corpus").item(0);
 			project.getCorpus().setName( corpusNode.getAttributes().getNamedItem("name").getTextContent() );
 
-			NodeList nodeCorpusChildren = corpusNode.getChildNodes();
-
-			for (int temp = 0; temp < nodeCorpusChildren.getLength(); temp++) {
-				Node nodeCorpusChild = nodeCorpusChildren.item(temp);
+			NodeList corpusNodeChildren = corpusNode.getChildNodes();
+			for (int temp = 0; temp < corpusNodeChildren.getLength(); temp++) {
+				Node nodeCorpusChild = corpusNodeChildren.item(temp);
 				if(nodeCorpusChild.getNodeName().equals("collection")) {
                     CorpusCollection collection = new CorpusCollection( nodeCorpusChild.getAttributes().getNamedItem("name").getTextContent() );
                     collection.setAcceptedType( CorpusFileType.fromXML( nodeCorpusChild.getAttributes().getNamedItem("accepts").getTextContent() ) );
@@ -129,6 +139,20 @@ public class ProjectFileManager {
                     project.getCorpus().addCollection( collection );
                 }
 			}
+
+			// AUTHORS
+            Node authorsNode = doc.getElementsByTagName("authors").item(0);
+            NodeList authorsNodeChildren = authorsNode.getChildNodes();
+            for (int temp = 0; temp < authorsNodeChildren.getLength(); temp++) {
+                Node nodeCorpusChild = corpusNodeChildren.item(temp);
+                if(nodeCorpusChild.getNodeName().equals("author")) {
+                    Author author = new Author( nodeCorpusChild.getAttributes().getNamedItem("name").getTextContent() );
+                    author.setAgeMin( Integer.valueOf(nodeCorpusChild.getAttributes().getNamedItem("ageMin").getTextContent()) );
+                    author.setAgeMax( Integer.valueOf(nodeCorpusChild.getAttributes().getNamedItem("ageMax").getTextContent()) );
+                    author.setGender( Integer.valueOf(nodeCorpusChild.getAttributes().getNamedItem("gender").getTextContent()) );
+                    project.addAuthor( author );
+                }
+            }
 			
 		 } catch (Exception e) {
 			 throw new Exception("Project file could not be read:" + e.getMessage());

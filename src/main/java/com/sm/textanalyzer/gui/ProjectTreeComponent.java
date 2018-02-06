@@ -18,6 +18,7 @@ public class ProjectTreeComponent {
 
     private CorpusDialog corpusDialog;
     private CollectionDialog collectionDialog;
+    private CorpusFileDialog corpusFileDialog;
 
     private final JFileChooser fileChooser = new JFileChooser();
     private final FileNameExtensionFilter projectFileFilter = new FileNameExtensionFilter("Project files", PROJECT_FILE_ENDING);
@@ -87,6 +88,10 @@ public class ProjectTreeComponent {
         collectionDialog = new CollectionDialog();
         collectionDialog.pack();
         collectionDialog.setLocationRelativeTo( contentPane );
+
+        corpusFileDialog = new CorpusFileDialog();
+        corpusFileDialog.pack();
+        corpusFileDialog.setLocationRelativeTo( contentPane );
 
         setHelpPage( 0 );
 
@@ -239,12 +244,14 @@ public class ProjectTreeComponent {
         // EDIT ENTRY
         editEntryButton.addActionListener(e -> {
             Object selected = projectTree.getSelectionPath().getLastPathComponent();
+
             if(selected instanceof Corpus) {
                 corpusDialog.setCorpus( (Corpus)selected );
                 corpusDialog.setVisible(true);
                 if(corpusDialog.getCloseAction()==CorpusDialog.OK) {
                     fireProjectChanged();
                     projectTreeModel.rootChanged();
+                    projectTree.setSelectionPath( projectTreeModel.getPathToRoot(selected) );
                 }
             }
             else if(selected instanceof CorpusCollection) {
@@ -257,7 +264,13 @@ public class ProjectTreeComponent {
                 }
             }
             else if(selected instanceof CorpusFile) {
-                System.out.println("Edit Corpus File");
+                corpusFileDialog.setFile((CorpusFile)selected);
+                corpusFileDialog.setVisible(true);
+                if(corpusFileDialog.getCloseAction()==CorpusFileDialog.OK) {
+                    fireProjectChanged();
+                    projectTreeModel.rootChanged();
+                    projectTree.setSelectionPath( projectTreeModel.getPathToRoot(selected) );
+                }
             }
         });
 
