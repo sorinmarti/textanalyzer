@@ -48,6 +48,7 @@ public class ProjectFileManager {
 	        for(CorpusCollection collection : project.getCorpus().getCollections()) {
                 Element collectionNode = doc.createElement("collection");
                 collectionNode.setAttribute("name", collection.getName());
+                collectionNode.setAttribute("accepts", collection.getAcceptedType().getXmlTypeName());
                 for(CorpusFile file : collection.getFiles()) {
                     Element fileNode = doc.createElement("file");
                     fileNode.setAttribute("name", file.getName());
@@ -104,23 +105,45 @@ public class ProjectFileManager {
 
 			//optional, but recommended
 			doc.getDocumentElement().normalize();
-			
-			NodeList nLemmaList = doc.getElementsByTagName("path");
 
-			for (int temp = 0; temp < nLemmaList.getLength(); temp++) {
-				Node nLemmaNode = nLemmaList.item(temp);
-				if (nLemmaNode.getNodeType() == Node.ELEMENT_NODE) {
-					Element lemmaElement = (Element) nLemmaNode;
-					String name = lemmaElement.getTextContent();
-					//TODO project.addProjectTextFile( Paths.get(name) );
+			Node corpusNode = doc.getElementsByTagName("corpus").item(0);
+			project.getCorpus().setName( corpusNode.getAttributes().getNamedItem("name").getTextContent() );
+
+			NodeList nodeCorpusChildren = corpusNode.getChildNodes();
+
+			for (int temp = 0; temp < nodeCorpusChildren.getLength(); temp++) {
+				Node nodeCorpusChild = nodeCorpusChildren.item(temp);
+				if(nodeCorpusChild.getNodeName().equals("collection")) {
+                    CorpusCollection collection = new CorpusCollection( nodeCorpusChild.getAttributes().getNamedItem("name").getTextContent() );
+                    collection.setAcceptedType( CorpusFileType.fromXML( nodeCorpusChild.getAttributes().getNamedItem("accepts").getTextContent() ) );
+
+                    NodeList fileList = nodeCorpusChild.getChildNodes();
+                    for(int i=0;i<fileList.getLength();i++) {
+                        Node file = fileList.item(i);
+                        if (file.getNodeType() == Node.ELEMENT_NODE) {
+                            Element fileElement = (Element) file;
+                            collection.addFile(fileElement.getAttribute("name"), Paths.get(fileElement.getTextContent()));
+                        }
+                    }
+
+                    project.getCorpus().addCollection( collection );
+                }
+				/*
+                if (nodeSingleCollection.getNodeType() == Node.ELEMENT_NODE) {
+					Element elementCollection = (Element) nodeSingleCollection;
+					String name = elementCollection.getTextContent();
+
+					//project.getCorpus().addCollection();
 				}
+				*/
 			}
 			
-			NodeList nLemmaLibList = doc.getElementsByTagName("lemmalibrary");
-			String lemmaLibraryText = nLemmaLibList.item(0).getTextContent();
-			project.setLemmaFileName( Paths.get(lemmaLibraryText) );
+
+
+
 			
 		 } catch (Exception e) {
+		    e.printStackTrace();
 			 throw new Exception("Project file could not be read:" + e.getMessage());
 	     }
 		

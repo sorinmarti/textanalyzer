@@ -7,6 +7,8 @@ import java.util.List;
 public class CorpusCollection {
 
     private String collectionName;
+    private CorpusFileType acceptedType;
+
     private List<CorpusFile> corpusFiles;
 
     public CorpusCollection(String collectionName) {
@@ -61,5 +63,13 @@ public class CorpusCollection {
 
     public void setName(String name) {
         this.collectionName = name;
+    }
+
+    public CorpusFileType getAcceptedType() {
+        return CorpusFileType.ALL;
+    }
+
+    public void setAcceptedType(CorpusFileType acceptedType) {
+        this.acceptedType = acceptedType;
     }
 }
