@@ -1,6 +1,5 @@
 package com.sm.textanalyzer.gui;
 
-import com.sm.textanalyzer.app.Author;
 import com.sm.textanalyzer.app.CorpusFile;
 import com.sm.textanalyzer.app.CorpusFileType;
 
@@ -9,6 +8,10 @@ import javax.swing.event.ListDataListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class CorpusFileDialog extends JDialog {
     static final int CANCEL = 0;
@@ -16,7 +19,6 @@ public class CorpusFileDialog extends JDialog {
 
     private CorpusFile file;
     private int closeAction;
-    private AuthorDialog authorDialog;
 
     private JPanel contentPane;
     private JButton buttonOK;
@@ -25,17 +27,13 @@ public class CorpusFileDialog extends JDialog {
     private JComboBox fileTypeComboBox;
     private JTextField textFieldName;
     private JLabel lblFilePath;
-    private JButton createNewAuthorButton;
     private JComboBox comboBox1;
+    private JTextField textField1;
 
     public CorpusFileDialog() {
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
-
-        authorDialog = new AuthorDialog();
-        authorDialog.pack();
-        authorDialog.setLocationRelativeTo( contentPane );
 
         fileTypeComboBox.setModel(new ComboBoxModel<CorpusFileType>() {
 
@@ -101,23 +99,24 @@ public class CorpusFileDialog extends JDialog {
 
         // call onCancel() on ESCAPE
         contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-
-        createNewAuthorButton.addActionListener(e -> {
-            Author author = file.getAuthor();
-            if(author==null) {
-                author = new Author("Select a name");
-            }
-            authorDialog.setAuthor( author );
-            authorDialog.setVisible(true);
-            if(authorDialog.getCloseAction()==AuthorDialog.OK) {
-                //TODO
-            }
-        });
     }
 
     private void onOK() {
         file.setName(textFieldName.getText());
         file.setFileType( (CorpusFileType)fileTypeComboBox.getSelectedItem() );
+        if(textField1.getText().isEmpty()) {
+            file.setFileDate(null);
+        }
+        else {
+            DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            try {
+                Date date = formatter.parse(textField1.getText());
+                file.setFileDate(date);
+            } catch (ParseException e) {
+                JOptionPane.showMessageDialog(contentPane, "Invalid date format.");
+                return;
+            }
+        }
         //TODO Language
         closeAction = OK;
         dispose();
@@ -132,6 +131,8 @@ public class CorpusFileDialog extends JDialog {
         lblFilePath.setText( file.getPath().toString() );
         textFieldName.setText( file.getName() );
         fileTypeComboBox.setSelectedItem( file.getFileType() );
+        textField1.setText(file.getFileDateString());
+
         // TODO Language
         if(file.getAuthor()!=null) {
             //TODO Author

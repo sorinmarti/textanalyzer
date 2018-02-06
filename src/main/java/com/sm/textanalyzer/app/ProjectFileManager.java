@@ -52,6 +52,11 @@ public class ProjectFileManager {
                 for(CorpusFile file : collection.getFiles()) {
                     Element fileNode = doc.createElement("file");
                     fileNode.setAttribute("name", file.getName());
+                    fileNode.setAttribute("type", file.getFileType().getXmlTypeName());
+                    fileNode.setAttribute("date", file.getFileDateString());
+                    if(file.getAuthor()!=null) {
+                        fileNode.setAttribute("author", file.getAuthor().getId());
+                    }
                     fileNode.appendChild(doc.createTextNode( file.getPath().toString() ));
                     collectionNode.appendChild( fileNode );
                 }
@@ -68,6 +73,14 @@ public class ProjectFileManager {
                 authorsNode.appendChild(authorNode);
 	        }
             root.appendChild(authorsNode);
+
+            Element languagesNode = doc.createElement("languages");
+            for(Language language : project.getLanguages()) {
+                Element languageNode = doc.createElement("language");
+                languageNode.setAttribute("name", language.getName());
+                languagesNode.appendChild(languageNode);
+            }
+            root.appendChild(languagesNode);
 
 	        // Save the document to the disk file
 	        TransformerFactory tranFactory = TransformerFactory.newInstance();

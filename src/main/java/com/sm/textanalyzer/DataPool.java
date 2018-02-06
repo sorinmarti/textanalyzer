@@ -1,9 +1,13 @@
 package com.sm.textanalyzer;
 
+import com.sm.textanalyzer.app.Author;
+import com.sm.textanalyzer.app.Language;
 import com.sm.textanalyzer.app.Project;
 import com.sm.textanalyzer.app.ProjectFileManager;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DataPool {
 
@@ -21,5 +25,19 @@ public class DataPool {
         project.setProjectFile(file);
         ProjectFileManager.writeProjectFile(file, project);
         //ProjectFileManager.writeLemmaList(project.getLemmaFileName().toFile(), TextLibrary.getInstance().getLemmaLibrary());
+    }
+
+    public static List<Language> getLanguages() {
+        if(projectOpen()) {
+            return project.getLanguages();
+        }
+        return new ArrayList<>();
+    }
+
+    public static List<Author> getAuthors() {
+        if(projectOpen()) {
+            return project.getAuthors();
+        }
+        return new ArrayList<>();
     }
 }

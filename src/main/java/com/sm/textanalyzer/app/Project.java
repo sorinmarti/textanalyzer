@@ -9,11 +9,16 @@ public class Project {
 	private File projectFile;
 	private Corpus corpus;
 	private List<Author> authors;
-	
+    private List<Language> languages;
+
 	public Project( ) {
 		this.projectFile = null;
 		corpus = new Corpus( "Corpus" );
 		authors = new ArrayList<>();
+		languages = new ArrayList<>();
+		languages.add( new Language("English"));
+        languages.add( new Language("Deutsch"));
+        languages.add( new Language("Francais"));
 	}
 
     public Corpus getCorpus() {
@@ -34,5 +39,9 @@ public class Project {
 
     public List<Author> getAuthors() {
 	    return authors;
+    }
+
+    public List<Language> getLanguages() {
+        return languages;
     }
 }

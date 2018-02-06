@@ -7,6 +7,8 @@ import com.sm.textanalyzer.app.*;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 
@@ -18,6 +20,7 @@ public class ProjectTreeComponent {
     private CorpusDialog corpusDialog;
     private CollectionDialog collectionDialog;
     private CorpusFileDialog corpusFileDialog;
+    private AuthorDialog authorDialog;
 
     private final JFileChooser fileChooser = new JFileChooser();
     private final FileNameExtensionFilter projectFileFilter = new FileNameExtensionFilter("Project files", PROJECT_FILE_ENDING);
@@ -71,6 +74,8 @@ public class ProjectTreeComponent {
     private JComboBox comboBox1;
     private JCheckBox fileTypeIsCheckBox;
     private JComboBox comboBox2;
+    private JButton authorsButton;
+    private JButton languagesButton;
 
     private ProjectTreeModel projectTreeModel;
     private AnalyzeTreeModel analyzeTreeModel;
@@ -88,6 +93,10 @@ public class ProjectTreeComponent {
         corpusFileDialog = new CorpusFileDialog();
         corpusFileDialog.pack();
         corpusFileDialog.setLocationRelativeTo( contentPane );
+
+        authorDialog = new AuthorDialog();
+        authorDialog.pack();
+        authorDialog.setLocationRelativeTo( contentPane );
 
         setHelpPage( 0 );
 
@@ -127,6 +136,7 @@ public class ProjectTreeComponent {
                 Project project;
                 try {
                     project = ProjectFileManager.readProjectFile(file);
+                    // TODO Check if Lexicon available
                 } catch (Exception e1) {
                     showMessage("Failed loading project file");
                     return;
@@ -134,6 +144,8 @@ public class ProjectTreeComponent {
                 DataPool.project = project;
 
                 fireProjectOpened();
+            } else {
+                showMessage("No Project file selected.");
             }
         });
 
@@ -278,6 +290,22 @@ public class ProjectTreeComponent {
             int idx = projectTabbedPane.getSelectedIndex();
             setHelpPage( idx );
 
+        });
+        authorsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                /*
+                Author author = file.getAuthor();
+                if(author==null) {
+                    author = new Author("Select a name");
+                }
+                authorDialog.setAuthor( author );
+                authorDialog.setVisible(true);
+                if(authorDialog.getCloseAction()==AuthorDialog.OK) {
+                    //TODO
+                }
+                */
+            }
         });
     }
 
