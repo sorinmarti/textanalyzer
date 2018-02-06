@@ -128,22 +128,9 @@ public class ProjectFileManager {
 
                     project.getCorpus().addCollection( collection );
                 }
-				/*
-                if (nodeSingleCollection.getNodeType() == Node.ELEMENT_NODE) {
-					Element elementCollection = (Element) nodeSingleCollection;
-					String name = elementCollection.getTextContent();
-
-					//project.getCorpus().addCollection();
-				}
-				*/
 			}
 			
-
-
-
-			
 		 } catch (Exception e) {
-		    e.printStackTrace();
 			 throw new Exception("Project file could not be read:" + e.getMessage());
 	     }
 		

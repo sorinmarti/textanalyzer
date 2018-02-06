@@ -1,8 +1,11 @@
 package com.sm.textanalyzer.gui;
 
 import com.sm.textanalyzer.app.CorpusCollection;
+import com.sm.textanalyzer.app.CorpusFileType;
 
 import javax.swing.*;
+import javax.swing.event.ListDataListener;
+import java.awt.*;
 import java.awt.event.*;
 
 public class CollectionDialog extends JDialog {
@@ -22,6 +25,54 @@ public class CollectionDialog extends JDialog {
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
+
+        comboBox1.setModel(new ComboBoxModel<CorpusFileType>() {
+
+            CorpusFileType selected;
+
+            @Override
+            public void setSelectedItem(Object anItem) {
+                selected = (CorpusFileType)anItem;
+            }
+
+            @Override
+            public Object getSelectedItem() {
+                return selected;
+            }
+
+            @Override
+            public int getSize() {
+                return 3;
+            }
+
+            @Override
+            public CorpusFileType getElementAt(int index) {
+                switch (index) {
+                    case 0:
+                        return CorpusFileType.ALL;
+                    case 1:
+                        return CorpusFileType.GENERIC_TEXT;
+                    case 2:
+                        return CorpusFileType.WHATSAPP;
+                }
+                return CorpusFileType.ALL;
+            }
+
+            @Override
+            public void addListDataListener(ListDataListener l) {}
+
+            @Override
+            public void removeListDataListener(ListDataListener l) {}
+        });
+        comboBox1.setRenderer(new ListCellRenderer<CorpusFileType>() {
+            @Override
+            public Component getListCellRendererComponent(JList list, CorpusFileType value, int index, boolean isSelected, boolean cellHasFocus) {
+                DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
+                JLabel item = (JLabel) defaultRenderer.getListCellRendererComponent(list,value,index,isSelected,cellHasFocus);
+                item.setText( value.getName() );
+                return item;
+            }
+        });
 
         buttonOK.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -53,6 +104,7 @@ public class CollectionDialog extends JDialog {
 
     private void onOK() {
         collection.setName( textField1.getText() );
+        collection.setAcceptedType( (CorpusFileType) comboBox1.getSelectedItem() );
         closeAction = OK;
         dispose();
     }
@@ -62,9 +114,10 @@ public class CollectionDialog extends JDialog {
         dispose();
     }
 
-    public void setCorpusColelction(CorpusCollection collection) {
+    public void setCorpusCollection(CorpusCollection collection) {
         this.collection = collection;
         textField1.setText( collection.getName() );
+        comboBox1.setSelectedItem( collection.getAcceptedType() );
     }
 
     public int getCloseAction() {

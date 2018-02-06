@@ -248,7 +248,7 @@ public class ProjectTreeComponent {
                 }
             }
             else if(selected instanceof CorpusCollection) {
-                collectionDialog.setCorpusColelction( (CorpusCollection)selected );
+                collectionDialog.setCorpusCollection( (CorpusCollection)selected );
                 collectionDialog.setVisible(true);
                 if(collectionDialog.getCloseAction()==CollectionDialog.OK) {
                     fireProjectChanged();

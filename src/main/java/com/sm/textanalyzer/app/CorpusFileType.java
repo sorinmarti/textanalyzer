@@ -1,7 +1,9 @@
 package com.sm.textanalyzer.app;
 
 public enum CorpusFileType {
-    ALL("All document types", "ALL");
+    ALL("All document types", "ALL"),
+    GENERIC_TEXT("Generic text documents", "PLAIN"),
+    WHATSAPP("Whatsapp chat protocols", "WHATSAPP");
 
     private final String typeName, xmlTypeName;
 
@@ -19,6 +21,14 @@ public enum CorpusFileType {
     }
 
     public static CorpusFileType fromXML(String xmlType) {
-       return ALL;
+       switch (xmlType) {
+           case "ALL":
+               return ALL;
+           case "PLAIN":
+               return GENERIC_TEXT;
+           case "WHATSAPP":
+               return WHATSAPP;
+       }
+        return ALL;
     }
 }

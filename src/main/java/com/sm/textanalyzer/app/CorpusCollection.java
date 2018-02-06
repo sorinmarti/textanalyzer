@@ -14,6 +14,7 @@ public class CorpusCollection {
     public CorpusCollection(String collectionName) {
         this.collectionName = collectionName;
         corpusFiles = new ArrayList<>();
+        acceptedType = CorpusFileType.ALL;
     }
 
     public CorpusFile addFile(String name) {
@@ -66,7 +67,7 @@ public class CorpusCollection {
     }
 
     public CorpusFileType getAcceptedType() {
-        return CorpusFileType.ALL;
+        return this.acceptedType;
     }
 
     public void setAcceptedType(CorpusFileType acceptedType) {
