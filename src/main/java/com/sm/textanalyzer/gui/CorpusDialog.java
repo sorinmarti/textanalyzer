@@ -61,13 +61,6 @@ public class CorpusDialog extends JDialog {
         dispose();
     }
 
-    public static void main(String[] args) {
-        CorpusDialog dialog = new CorpusDialog();
-        dialog.pack();
-        dialog.setVisible(true);
-        System.exit(0);
-    }
-
     public void setCorpus(Corpus corpus) {
         this.corpus = corpus;
         textField1.setText( corpus.getName() );

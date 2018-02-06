@@ -1,25 +1,45 @@
 package com.sm.textanalyzer.gui;
 
 import com.sm.textanalyzer.DataPool;
-import com.sm.textanalyzer.app.Corpus;
-import com.sm.textanalyzer.app.CorpusCollection;
-import com.sm.textanalyzer.app.CorpusFile;
-import com.sm.textanalyzer.app.Project;
+import com.sm.textanalyzer.MainClass;
+import com.sm.textanalyzer.app.*;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreePath;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.io.File;
 
 public class ProjectTreeComponent {
+    static final String PROJECT_FILE_ENDING = "xml"; //NON-NLS
+    static final String LEXICON_FILE_ENDING = "xml"; //NON-NLS
+    static final String TEXT_FILE_ENDING = "txt"; //NON-NLS
+
+    private CorpusDialog corpusDialog;
+    private CollectionDialog collectionDialog;
+
+    private final JFileChooser fileChooser = new JFileChooser();
+    private final FileNameExtensionFilter projectFileFilter = new FileNameExtensionFilter("Project files", PROJECT_FILE_ENDING);
+    final FileNameExtensionFilter lemmaFileFilter = new FileNameExtensionFilter("Lexicon", LEXICON_FILE_ENDING);
+    final FileNameExtensionFilter textFileFilter = new FileNameExtensionFilter("Text files", TEXT_FILE_ENDING);
+    final FileFilter folderFileFilter = new FileFilter() {
+
+        @Override
+        public String getDescription() {
+            return "Directories";
+        }
+
+        @Override
+        public boolean accept(File arg0) {
+            return arg0 != null && arg0.isDirectory();
+        }
+    };
 
     private JButton newCollectionButton;
     private JButton newFileButton;
     private JButton filesFromDirectoryButton;
     private JTree projectTree;
     private JButton deleteFileButton;
-    private JButton editMetadataButton;
     private JTabbedPane projectTabbedPane;
     private JButton createProjectButton;
     private JButton loadProjectButton;
@@ -59,6 +79,14 @@ public class ProjectTreeComponent {
     private boolean modified = false;
 
     public ProjectTreeComponent() {
+        corpusDialog = new CorpusDialog();
+        corpusDialog.pack();
+        corpusDialog.setLocationRelativeTo( contentPane );
+
+        collectionDialog = new CollectionDialog();
+        collectionDialog.pack();
+        collectionDialog.setLocationRelativeTo( contentPane );
+
         // NEW PROJECT
         createProjectButton.addActionListener(e ->  {
             if(DataPool.projectOpen() && modified) {
@@ -70,30 +98,95 @@ public class ProjectTreeComponent {
             DataPool.createProject();
             setData(DataPool.project);
             newCollectionButton.setEnabled( true );
+            fireProjectChanged();
         });
 
         // SAVE PROJECT
-        saveProjectButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
+        saveProjectButton.addActionListener(e -> {
+            File file = showSaveDialog("Aborted saving process", projectFileFilter);
+            if(file!=null) {
+                try {
+                    DataPool.saveProject(file);
+                    showMessage("Project saved");
+                    fireProjectSaved();
+                } catch (Exception e1) {
+                    showMessage("Project could not be saved");
+                }
             }
         });
 
+        // LOAD PROJECT
+        loadProjectButton.addActionListener(e -> {
+            File file = showOpenDialog("Open Project", "No project file selected", projectFileFilter, false);
+
+            if( file != null) {
+                Project project;
+                try {
+                    project = ProjectFileManager.readProjectFile(file);
+                } catch (Exception e1) {
+                    showMessage("Failed loading project file");
+                    return;
+                }
+                DataPool.project = project;
+
+                fireProjectOpened();
+            }
+        });
+
+        // NEW COLLECTION
         newCollectionButton.addActionListener(e->{
             String answer = JOptionPane.showInputDialog("Name of collection?");
             if(answer!=null && !answer.isEmpty()) {
                 CorpusCollection col = projectTreeModel.addCollection(answer);
-                projectTree.setSelectionPath( new TreePath(new Object[]{DataPool.project, col}) );
+                projectTree.setSelectionPath( projectTreeModel.getPathToRoot(col) );
+                fireProjectChanged();
             }
         });
+        // DELETE COLLECTION
         deleteCollectionButton.addActionListener(e-> {
-            Object comp = projectTree.getSelectionPath().getLastPathComponent();
-            if(comp instanceof CorpusCollection) {
-                projectTreeModel.deleteCollection( (CorpusCollection)comp );
+            int answer = JOptionPane.showConfirmDialog(contentPane, "Really remove collection?");
+            if(answer==JOptionPane.YES_OPTION) {
+                Object comp = projectTree.getSelectionPath().getLastPathComponent();
+                if (comp instanceof CorpusCollection) {
+                    projectTreeModel.deleteCollection((CorpusCollection) comp);
+                    projectTree.setSelectionPath( projectTreeModel.getPathToRoot(DataPool.project.getCorpus()) );
+                    fireProjectChanged();
+                }
             }
         });
 
+        // ADD FILE
+        newFileButton.addActionListener(e -> {
+            Object selected = projectTree.getSelectionPath().getLastPathComponent();
+            if(selected instanceof CorpusCollection) {
+                File file = showOpenDialog("Add Corpus Text File", "No files selected", textFileFilter, false);
+                if(file != null) {
+                    if( !FileUtils.fileExists( file ) ) {
+                        showMessage("The selected file does not exist or is not readable.");
+                    }
+                    else if( FileUtils.fileExistsInProjectList( DataPool.project, file ) ) {
+                        showMessage("The file is already in the corpus library");
+                    }
+                    else {
+                        CorpusFile corpusFile = projectTreeModel.addFile( ((CorpusCollection)selected), file);
+                        projectTree.setSelectionPath( projectTreeModel.getPathToRoot(corpusFile) );
+                        fireProjectChanged();
+                    }
+                }
+            }
+        });
+
+        deleteFileButton.addActionListener( e -> {
+            int answer = JOptionPane.showConfirmDialog(contentPane, "Really remove file?");
+            if(answer==JOptionPane.YES_OPTION) {
+                Object comp = projectTree.getSelectionPath().getLastPathComponent();
+                if (comp instanceof CorpusFile) {
+                    projectTreeModel.deleteFile((CorpusFile) comp);
+                    projectTree.setSelectionPath( projectTreeModel.getPathToRoot(DataPool.project.getCorpus()) );
+                    fireProjectChanged();
+                }
+            }
+        });
         projectTreeModel = new ProjectTreeModel( );
         analyzeTreeModel = new DefaultTreeModel( null );
 
@@ -103,16 +196,23 @@ public class ProjectTreeComponent {
                 textAreaInformation.setText( "This entry represents the corpus you are working with. It contains collections of files." );
                 enableFileButtons(false);
                 deleteCollectionButton.setEnabled(false);
+                editEntryButton.setEnabled(true);
             }
             else if(e.getPath().getLastPathComponent() instanceof CorpusCollection) {
                 textAreaInformation.setText( "This entry represents a collection of files. You can add files one by one or select a directory to add all files from. Only text files ending in .txt are processed." );
                 enableFileButtons(true);
                 deleteCollectionButton.setEnabled(true);
+                editEntryButton.setEnabled(true);
             }
             else if(e.getPath().getLastPathComponent() instanceof CorpusFile) {
                 textAreaInformation.setText( "This entry represents a corpus file. You can delete it or edit its meta data." );
                 enableFileButtons(false);
                 deleteCollectionButton.setEnabled(false);
+                deleteFileButton.setEnabled(true);
+                editEntryButton.setEnabled(true);
+            }
+            else {
+                editEntryButton.setEnabled(false);
             }
         });
 
@@ -134,32 +234,39 @@ public class ProjectTreeComponent {
         editEntryButton.addActionListener(e -> {
             Object selected = projectTree.getSelectionPath().getLastPathComponent();
             if(selected instanceof Corpus) {
-                CorpusDialog dialog = new CorpusDialog();
-                dialog.setCorpus( (Corpus)selected );
-                dialog.setVisible(true);
-                if(dialog.getCloseAction()==CorpusDialog.OK) {
-                   projectTreeModel.rootChanged();
+                corpusDialog.setCorpus( (Corpus)selected );
+                corpusDialog.setVisible(true);
+                if(corpusDialog.getCloseAction()==CorpusDialog.OK) {
+                    fireProjectChanged();
+                    projectTreeModel.rootChanged();
                 }
             }
             else if(selected instanceof CorpusCollection) {
-                System.out.println("Edit Corpus Collection");
+                collectionDialog.setCorpusColelction( (CorpusCollection)selected );
+                collectionDialog.setVisible(true);
+                if(collectionDialog.getCloseAction()==CollectionDialog.OK) {
+                    fireProjectChanged();
+                    projectTreeModel.rootChanged();
+                    projectTree.setSelectionPath( projectTreeModel.getPathToRoot(selected) );
+                }
             }
             else if(selected instanceof CorpusFile) {
                 System.out.println("Edit Corpus File");
             }
         });
+
+
     }
 
     private void enableFileButtons(boolean enable) {
         newFileButton.setEnabled(enable);
         filesFromDirectoryButton.setEnabled(enable);
         deleteFileButton.setEnabled(enable);
-        editMetadataButton.setEnabled(enable);
     }
 
     public void setData(Project data) {
         projectTreeModel.rootChanged();
-        //analyzeTreeModel.setRoot( data.getCorpus() );
+        projectTree.setSelectionPath(projectTreeModel.getPathToRoot(DataPool.project.getCorpus()));
         modified = false;
     }
 
@@ -170,5 +277,70 @@ public class ProjectTreeComponent {
     public boolean isModified(Project data) {
         System.out.println("Is modified?");
         return modified;
+    }
+
+    private void fireProjectChanged() {
+        modified = true;
+        saveProjectButton.setEnabled(true);
+        MainClass.setWindowTitle(modified);
+    }
+
+    private void fireProjectSaved() {
+        modified = false;
+        saveProjectButton.setEnabled(false);
+        MainClass.setWindowTitle(modified);
+    }
+
+    private void fireProjectOpened() {
+       saveProjectButton.setEnabled( true );
+       modified = false;
+       setData( DataPool.project );
+       MainClass.setWindowTitle(modified);
+    }
+
+    /**
+     * Shows a file open dialog.
+     * @param title The title of the dialog
+     * @param cancelMsg The cancel message in case the opening gets cancelled
+     * @param filter The file filter to apply.
+     * @param foldersOnly Flag if only folders can be shown and selected.
+     * @return The selected File.
+     */
+    File showOpenDialog(String title, String cancelMsg, FileFilter filter, boolean foldersOnly) {
+        fileChooser.setDialogTitle(title);
+        fileChooser.setFileFilter(filter);
+        if(foldersOnly) {
+            fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        }
+        else {
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        }
+
+        int returnVal = fileChooser.showOpenDialog(contentPane);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            return  fileChooser.getSelectedFile();
+        }
+        else {
+            showMessage(cancelMsg);
+        }
+        return null;
+    }
+
+    private File showSaveDialog(String cancelMsg, FileFilter filter) {
+        fileChooser.setDialogTitle("Save Project");
+        fileChooser.setFileFilter(filter);
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        int answer = fileChooser.showSaveDialog(contentPane);
+        if(answer == JFileChooser.APPROVE_OPTION) {
+            return fileChooser.getSelectedFile();
+        }
+        else {
+            showMessage(cancelMsg);
+        }
+        return null;
+    }
+
+    private void showMessage(String message) {
+        JOptionPane.showMessageDialog(contentPane, message);
     }
 }

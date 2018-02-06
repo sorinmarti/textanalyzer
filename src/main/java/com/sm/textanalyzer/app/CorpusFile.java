@@ -46,4 +46,8 @@ public class CorpusFile {
     public String toString() {
         return this.name;
     }
+
+    public Path getPath() {
+        return originalSavePath;
+    }
 }

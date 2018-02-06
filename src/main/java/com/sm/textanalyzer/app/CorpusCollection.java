@@ -26,6 +26,10 @@ public class CorpusCollection {
         return file;
     }
 
+    public void addFile(CorpusFile file) {
+        corpusFiles.add( file );
+    }
+
     public String getName() {
         return collectionName;
     }
@@ -45,5 +49,17 @@ public class CorpusCollection {
 
     public int getFileIndex(CorpusFile child) {
         return corpusFiles.indexOf( child );
+    }
+
+    public List<CorpusFile> getFiles() {
+        return corpusFiles;
+    }
+
+    public void removeFile(CorpusFile file) {
+        corpusFiles.remove(file);
+    }
+
+    public void setName(String name) {
+        this.collectionName = name;
     }
 }

@@ -61,14 +61,13 @@ public class FileUtils {
 		if(project==null || path==null) {
 			throw new IllegalArgumentException("Project and path can't be null");
 		}
-		/*
-		TODO
-		for(Path projectPath : project.getProjectTextFiles()) {
-			if(projectPath.equals(path)) {
-				return true;
-			}
-		}
-		*/
+		for(CorpusCollection col : project.getCorpus().getCollections()) {
+		    for(CorpusFile file : col.getFiles()) {
+		        if(file.getPath().equals(path)) {
+		            return true;
+                }
+            }
+        }
 		return false;
 	}
 	

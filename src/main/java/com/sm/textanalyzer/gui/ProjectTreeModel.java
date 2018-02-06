@@ -9,6 +9,7 @@ import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,6 +88,25 @@ public class ProjectTreeModel implements TreeModel{
         listeners.remove(l);
     }
 
+    public TreePath getPathToRoot(Object node) {
+        TreePath path = null;
+        if(node instanceof Corpus) {
+            path = new TreePath(new Object[]{node});
+        }
+        if(node instanceof CorpusCollection) {
+            path = new TreePath(new Object[]{DataPool.project.getCorpus(), node});
+        }
+        if(node instanceof CorpusFile) {
+            for(CorpusCollection col : DataPool.project.getCorpus().getCollections()) {
+                if(col.getFiles().indexOf(node)>=0) {
+                    path = new TreePath(new Object[]{DataPool.project.getCorpus(),col, node});
+                    break;
+                }
+            }
+        }
+        return path;
+    }
+
     public CorpusCollection addCollection(String name) {
         if(DataPool.projectOpen()) {
             CorpusCollection col = new CorpusCollection( name );
@@ -97,6 +117,12 @@ public class ProjectTreeModel implements TreeModel{
         return null;
     }
 
+    public CorpusFile addFile(CorpusCollection selected, File file) {
+        CorpusFile corpusFile = new CorpusFile("Filename", file.toPath());
+        selected.addFile(corpusFile );
+        return corpusFile;
+    }
+
     public void deleteCollection(CorpusCollection collection) {
         if(DataPool.projectOpen()) {
             DataPool.project.getCorpus().removeCollection(collection);
@@ -104,21 +130,24 @@ public class ProjectTreeModel implements TreeModel{
         }
     }
 
-    private void fireTreeStructureChanged() {
-        for(TreeModelListener l : listeners) {
-            l.treeStructureChanged( new TreeModelEvent( this, new Object[]{DataPool.project}));
+    public void deleteFile(CorpusFile file) {
+        if(DataPool.projectOpen()) {
+            TreePath path = getPathToRoot( file );
+            ((CorpusCollection)path.getPathComponent(1)).removeFile( file );
+            fireTreeStructureChanged();
         }
     }
 
-    private void fireCollectionInserted(CorpusCollection collection) {
+    private void fireTreeStructureChanged() {
         for(TreeModelListener l : listeners) {
-            l.treeNodesInserted( new TreeModelEvent(this, new Object[]{DataPool.project, collection}));
+            l.treeStructureChanged( new TreeModelEvent( this, new Object[]{DataPool.project.getCorpus()}));
         }
     }
 
     public void rootChanged() {
         fireTreeStructureChanged();
     }
+
 
 
 }

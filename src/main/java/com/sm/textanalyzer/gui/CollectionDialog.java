@@ -1,17 +1,24 @@
 package com.sm.textanalyzer.gui;
 
+import com.sm.textanalyzer.app.CorpusCollection;
+
 import javax.swing.*;
 import java.awt.event.*;
 
-public class EditMetaDataDialog extends JDialog {
+public class CollectionDialog extends JDialog {
+    static final int CANCEL = 0;
+    static final int OK = 1;
+
+    private CorpusCollection collection;
+    private int closeAction;
+
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
-    private JComboBox comboBox1;
-    private JComboBox comboBox2;
     private JTextField textField1;
+    private JComboBox comboBox1;
 
-    public EditMetaDataDialog() {
+    public CollectionDialog() {
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
@@ -45,12 +52,22 @@ public class EditMetaDataDialog extends JDialog {
     }
 
     private void onOK() {
-        // add your code here
+        collection.setName( textField1.getText() );
+        closeAction = OK;
         dispose();
     }
 
     private void onCancel() {
-        // add your code here if necessary
+        closeAction = CANCEL;
         dispose();
+    }
+
+    public void setCorpusColelction(CorpusCollection collection) {
+        this.collection = collection;
+        textField1.setText( collection.getName() );
+    }
+
+    public int getCloseAction() {
+        return closeAction;
     }
 }
