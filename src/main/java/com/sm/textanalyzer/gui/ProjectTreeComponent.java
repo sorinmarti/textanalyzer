@@ -7,7 +7,6 @@ import com.sm.textanalyzer.app.*;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.tree.DefaultTreeModel;
 import java.io.File;
 import java.io.IOException;
 
@@ -52,19 +51,6 @@ public class ProjectTreeComponent {
     private JButton searchButton;
     private JButton resetButton;
     private JButton saveSearchButton;
-    private JCheckBox onlyIncludeResultsWhereCheckBox;
-    private JComboBox comboBox1;
-    private JComboBox comboBox2;
-    private JComboBox comboBox3;
-    private JTextField textField2;
-    private JTextField textField3;
-    private JComboBox comboBox4;
-    private JComboBox comboBox5;
-    private JComboBox comboBox6;
-    private JTextField textField4;
-    private JComboBox comboBox7;
-    private JComboBox comboBox8;
-    private JTextField textField5;
     private JButton deleteCollectionButton;
     private JButton UPButton;
     private JButton DOWNButton;
@@ -75,9 +61,19 @@ public class ProjectTreeComponent {
     private JEditorPane helpEditorPanel;
     public JSplitPane contentPane;
     private JButton editEntryButton;
+    private JCheckBox authorIsCheckBox;
+    private JComboBox comboBox9;
+    private JCheckBox authorMatchesCheckBox;
+    private JTextField textField6;
+    private JTextField textField7;
+    private JComboBox comboBox10;
+    private JCheckBox languageIsCheckBox;
+    private JComboBox comboBox1;
+    private JCheckBox fileTypeIsCheckBox;
+    private JComboBox comboBox2;
 
     private ProjectTreeModel projectTreeModel;
-    private DefaultTreeModel analyzeTreeModel;
+    private AnalyzeTreeModel analyzeTreeModel;
     private boolean modified = false;
 
     public ProjectTreeComponent() {
@@ -196,7 +192,7 @@ public class ProjectTreeComponent {
             }
         });
         projectTreeModel = new ProjectTreeModel( );
-        analyzeTreeModel = new DefaultTreeModel( null );
+        analyzeTreeModel = new AnalyzeTreeModel( );
 
         projectTree.setModel( projectTreeModel );
         projectTree.addTreeSelectionListener(e -> {
@@ -250,6 +246,7 @@ public class ProjectTreeComponent {
                 corpusDialog.setVisible(true);
                 if(corpusDialog.getCloseAction()==CorpusDialog.OK) {
                     fireProjectChanged();
+                    analyzeTreeModel.rootChanged();
                     projectTreeModel.rootChanged();
                     projectTree.setSelectionPath( projectTreeModel.getPathToRoot(selected) );
                 }
@@ -259,6 +256,7 @@ public class ProjectTreeComponent {
                 collectionDialog.setVisible(true);
                 if(collectionDialog.getCloseAction()==CollectionDialog.OK) {
                     fireProjectChanged();
+                    analyzeTreeModel.rootChanged();
                     projectTreeModel.rootChanged();
                     projectTree.setSelectionPath( projectTreeModel.getPathToRoot(selected) );
                 }
@@ -268,6 +266,7 @@ public class ProjectTreeComponent {
                 corpusFileDialog.setVisible(true);
                 if(corpusFileDialog.getCloseAction()==CorpusFileDialog.OK) {
                     fireProjectChanged();
+                    analyzeTreeModel.rootChanged();
                     projectTreeModel.rootChanged();
                     projectTree.setSelectionPath( projectTreeModel.getPathToRoot(selected) );
                 }
@@ -314,6 +313,7 @@ public class ProjectTreeComponent {
 
     public void setData(Project data) {
         projectTreeModel.rootChanged();
+        analyzeTreeModel.rootChanged();
         projectTree.setSelectionPath(projectTreeModel.getPathToRoot(DataPool.project.getCorpus()));
         modified = false;
     }

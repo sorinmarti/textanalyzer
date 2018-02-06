@@ -25,8 +25,6 @@ public class CorpusFileDialog extends JDialog {
     private JComboBox fileTypeComboBox;
     private JTextField textFieldName;
     private JLabel lblFilePath;
-    private JLabel lblSelectedAuthor;
-    private JButton deleteAuthorButton;
     private JButton createNewAuthorButton;
     private JComboBox comboBox1;
 
@@ -112,13 +110,8 @@ public class CorpusFileDialog extends JDialog {
             authorDialog.setAuthor( author );
             authorDialog.setVisible(true);
             if(authorDialog.getCloseAction()==AuthorDialog.OK) {
-                file.setAuthor( author );
-                lblSelectedAuthor.setText(author.getName());
+                //TODO
             }
-        });
-        deleteAuthorButton.addActionListener(e -> {
-            file.setAuthor( null );
-            lblSelectedAuthor.setText("");
         });
     }
 
@@ -141,7 +134,7 @@ public class CorpusFileDialog extends JDialog {
         fileTypeComboBox.setSelectedItem( file.getFileType() );
         // TODO Language
         if(file.getAuthor()!=null) {
-            lblSelectedAuthor.setText(file.getAuthor().getName());
+            //TODO Author
         }
         this.file = file;
     }
