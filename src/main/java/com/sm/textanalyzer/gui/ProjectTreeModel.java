@@ -118,9 +118,14 @@ public class ProjectTreeModel implements TreeModel{
     }
 
     public CorpusFile addFile(CorpusCollection selected, File file) {
-        CorpusFile corpusFile = new CorpusFile("Filename", file.toPath());
-        selected.addFile(corpusFile );
-        return corpusFile;
+        if(DataPool.projectOpen()) {
+            int collectionIndex = DataPool.project.getCorpus().getCollectionIndex( selected );
+            CorpusFile corpusFile = new CorpusFile(file.getName(), file.toPath());
+            DataPool.project.getCorpus().getCollection( collectionIndex ).addFile( corpusFile );
+            fireTreeStructureChanged();
+            return corpusFile;
+        }
+        return null;
     }
 
     public void deleteCollection(CorpusCollection collection) {

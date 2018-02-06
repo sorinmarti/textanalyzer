@@ -50,4 +50,8 @@ public class CorpusFile {
     public Path getPath() {
         return originalSavePath;
     }
+
+    public String getName() {
+        return name;
+    }
 }

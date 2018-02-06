@@ -41,20 +41,21 @@ public class ProjectFileManager {
 	        Element root = doc.createElement("project");
 	        doc.appendChild(root);
 
-	        Element pathsNode = doc.createElement("paths");
-	        root.appendChild(pathsNode);
+	        Element corpusNode = doc.createElement("corpus");
+	        corpusNode.setAttribute("name", project.getCorpus().getName());
+	        root.appendChild(corpusNode);
 
-	        /* TODO
-	        for (Path dtl : project.getProjectTextFiles()) {
-	            Element pathNode = doc.createElement("path");
-	            pathNode.appendChild(doc.createTextNode( dtl.toString() ));
-	            pathsNode.appendChild(pathNode);
-	        }
-			 */
-	        
-	        Element lemmaLibraryNode = doc.createElement("lemmalibrary");
-	        lemmaLibraryNode.appendChild( doc.createTextNode( project.getLemmaFileName().toString() ));
-	        root.appendChild(lemmaLibraryNode);
+	        for(CorpusCollection collection : project.getCorpus().getCollections()) {
+                Element collectionNode = doc.createElement("collection");
+                collectionNode.setAttribute("name", collection.getName());
+                for(CorpusFile file : collection.getFiles()) {
+                    Element fileNode = doc.createElement("file");
+                    fileNode.setAttribute("name", file.getName());
+                    fileNode.appendChild(doc.createTextNode( file.getPath().toString() ));
+                    collectionNode.appendChild( fileNode );
+                }
+                corpusNode.appendChild( collectionNode );
+            }
 
 	        // Save the document to the disk file
 	        TransformerFactory tranFactory = TransformerFactory.newInstance();

@@ -9,6 +9,7 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.DefaultTreeModel;
 import java.io.File;
+import java.io.IOException;
 
 public class ProjectTreeComponent {
     static final String PROJECT_FILE_ENDING = "xml"; //NON-NLS
@@ -70,7 +71,7 @@ public class ProjectTreeComponent {
     private JButton ZYXButton;
     private JButton saveProjectButton;
     private JButton lexiconsButton;
-    private JEditorPane editorPane1;
+    private JEditorPane helpEditorPanel;
     public JSplitPane contentPane;
     private JButton editEntryButton;
 
@@ -86,6 +87,8 @@ public class ProjectTreeComponent {
         collectionDialog = new CollectionDialog();
         collectionDialog.pack();
         collectionDialog.setLocationRelativeTo( contentPane );
+
+        setHelpPage( 0 );
 
         // NEW PROJECT
         createProjectButton.addActionListener(e ->  {
@@ -195,18 +198,21 @@ public class ProjectTreeComponent {
             if(e.getPath().getLastPathComponent() instanceof Corpus) {
                 textAreaInformation.setText( "This entry represents the corpus you are working with. It contains collections of files." );
                 enableFileButtons(false);
+                enableSortButtons(false, true);
                 deleteCollectionButton.setEnabled(false);
                 editEntryButton.setEnabled(true);
             }
             else if(e.getPath().getLastPathComponent() instanceof CorpusCollection) {
                 textAreaInformation.setText( "This entry represents a collection of files. You can add files one by one or select a directory to add all files from. Only text files ending in .txt are processed." );
                 enableFileButtons(true);
+                enableSortButtons(true, true);
                 deleteCollectionButton.setEnabled(true);
                 editEntryButton.setEnabled(true);
             }
             else if(e.getPath().getLastPathComponent() instanceof CorpusFile) {
                 textAreaInformation.setText( "This entry represents a corpus file. You can delete it or edit its meta data." );
                 enableFileButtons(false);
+                enableSortButtons(true, false);
                 deleteCollectionButton.setEnabled(false);
                 deleteFileButton.setEnabled(true);
                 editEntryButton.setEnabled(true);
@@ -256,6 +262,35 @@ public class ProjectTreeComponent {
         });
 
 
+        projectTabbedPane.addChangeListener(e -> {
+            int idx = projectTabbedPane.getSelectedIndex();
+            setHelpPage( idx );
+
+        });
+    }
+
+    private void setHelpPage(int idx) {
+        String pageName;
+        switch (idx) {
+            // TODO
+            default:
+                pageName = "default";
+        }
+
+        try {
+            File file = new File("res/help/"+pageName+".html");
+            helpEditorPanel.setPage(file.toURI().toURL());
+        } catch (IOException e1) {
+            e1.printStackTrace();
+            helpEditorPanel.setText("Could not load help file.");
+        }
+    }
+
+    private void enableSortButtons(boolean updown, boolean abcxyz) {
+        UPButton.setEnabled( updown );
+        DOWNButton.setEnabled( updown );
+        ABCButton.setEnabled( abcxyz );
+        ZYXButton.setEnabled( abcxyz );
     }
 
     private void enableFileButtons(boolean enable) {
