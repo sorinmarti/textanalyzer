@@ -76,6 +76,9 @@ public class ProjectTreeComponent {
     private JComboBox comboBox2;
     private JButton authorsButton;
     private JButton languagesButton;
+    private JCheckBox dateIsCheckBox;
+    private JTextField textField2;
+    private JTextField textField3;
 
     private ProjectTreeModel projectTreeModel;
     private AnalyzeTreeModel analyzeTreeModel;
