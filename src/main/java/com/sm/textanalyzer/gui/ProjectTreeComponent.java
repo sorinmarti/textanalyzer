@@ -7,6 +7,8 @@ import com.sm.textanalyzer.app.*;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.StyleSheet;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -17,6 +19,7 @@ public class ProjectTreeComponent {
     static final String LEXICON_FILE_ENDING = "xml"; //NON-NLS
     static final String TEXT_FILE_ENDING = "txt"; //NON-NLS
 
+    private AboutDialog aboutDialog;
     private CorpusDialog corpusDialog;
     private CollectionDialog collectionDialog;
     private CorpusFileDialog corpusFileDialog;
@@ -86,12 +89,22 @@ public class ProjectTreeComponent {
     private JTextField textField4;
     private JButton searchButton1;
     private JButton resetButton1;
+    private JButton enableEditingButton;
+    private JButton disableEditingButton;
+    private JTextField textField5;
+    private JButton aboutButton;
+    private JButton moreHelpButton;
 
     private ProjectTreeModel projectTreeModel;
     private AnalyzeTreeModel analyzeTreeModel;
     private boolean modified = false;
 
     public ProjectTreeComponent() {
+        // DIALOG INITIALIZATION
+        aboutDialog = new AboutDialog();
+        aboutDialog.pack();
+        aboutDialog.setLocationRelativeTo( contentPane );
+
         corpusDialog = new CorpusDialog();
         corpusDialog.pack();
         corpusDialog.setLocationRelativeTo( contentPane );
@@ -108,6 +121,14 @@ public class ProjectTreeComponent {
         authorDialog.pack();
         authorDialog.setLocationRelativeTo( contentPane );
 
+        // HELP PAGE INITIALIZATION
+        helpEditorPanel.setEditable(false);
+        HTMLEditorKit kit = new HTMLEditorKit();
+        helpEditorPanel.setEditorKit(kit);
+        StyleSheet styleSheet = kit.getStyleSheet();
+        styleSheet.addRule("body {background: #E6E6E6; font-size: 10px; font-family:arial; margin: 0px; padding: 5px; }");
+        styleSheet.addRule("h1 {font-size:14px; color:#0B6121;}");
+        styleSheet.addRule("h2 {font-size:10px; color:#0B6121;}");
         setHelpPage( 0 );
 
         // NEW PROJECT
@@ -317,12 +338,30 @@ public class ProjectTreeComponent {
                 */
             }
         });
+        // ABOUT
+        aboutButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                aboutDialog.setVisible(true);
+            }
+        });
     }
 
     private void setHelpPage(int idx) {
         String pageName;
         switch (idx) {
-            // TODO
+            case 0:     // Manage Corpus
+                pageName = "manage";
+                break;
+            case 1:     // Process Corpus
+                pageName = "process";
+                break;
+            case 2:     // Search Corpus
+                pageName = "search";
+                break;
+            case 3:     // Corpus Statistics
+                pageName = "statistics";
+                break;
             default:
                 pageName = "default";
         }
