@@ -94,6 +94,7 @@ public class ProjectTreeComponent {
     private JTextField textField5;
     private JButton aboutButton;
     private JButton moreHelpButton;
+    private JButton copyTextFilesButton;
 
     private ProjectTreeModel projectTreeModel;
     private AnalyzeTreeModel analyzeTreeModel;
