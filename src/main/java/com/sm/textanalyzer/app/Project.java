@@ -10,6 +10,7 @@ public class Project {
 	private Corpus corpus;
 	private List<Author> authors;
     private List<Language> languages;
+    private AnalysisSettings settings;
 
 	public Project( ) {
 		this.projectFile = null;
@@ -19,6 +20,7 @@ public class Project {
 		languages.add( new Language("English"));
         languages.add( new Language("Deutsch"));
         languages.add( new Language("Francais"));
+        settings = new AnalysisSettings();
 	}
 
     public Corpus getCorpus() {
@@ -44,4 +46,8 @@ public class Project {
     public List<Language> getLanguages() {
         return languages;
     }
+
+	public AnalysisSettings getSettings() {
+		return settings;
+	}
 }

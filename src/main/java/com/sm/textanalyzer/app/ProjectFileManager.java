@@ -82,6 +82,14 @@ public class ProjectFileManager {
             }
             root.appendChild(languagesNode);
 
+			Element settingsNode = doc.createElement("settings");
+
+			Element settingNode = doc.createElement("tokenDelimiter");
+			settingNode.setTextContent( project.getSettings().getTokenDelimiter() );
+
+			settingsNode.appendChild(settingNode);
+			root.appendChild(settingsNode);
+
 	        // Save the document to the disk file
 	        TransformerFactory tranFactory = TransformerFactory.newInstance();
 	        Transformer aTransformer = tranFactory.newTransformer();
@@ -166,6 +174,8 @@ public class ProjectFileManager {
                     project.addAuthor( author );
                 }
             }
+
+            // TODO Languages, Settings
 			
 		 } catch (Exception e) {
 			 throw new Exception("Project file could not be read:" + e.getMessage());
