@@ -79,6 +79,13 @@ public class ProjectTreeComponent {
     private JCheckBox dateIsCheckBox;
     private JTextField textField2;
     private JTextField textField3;
+    private JTable table1;
+    private JList list1;
+    private JButton exportStatisticsButton;
+    private JButton exportTokenListButton;
+    private JTextField textField4;
+    private JButton searchButton1;
+    private JButton resetButton1;
 
     private ProjectTreeModel projectTreeModel;
     private AnalyzeTreeModel analyzeTreeModel;

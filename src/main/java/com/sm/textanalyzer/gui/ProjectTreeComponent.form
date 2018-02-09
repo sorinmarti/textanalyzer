@@ -20,7 +20,7 @@
         <children>
           <splitpane id="fd04e">
             <constraints>
-              <tabbedpane title="Manage Corpus"/>
+              <tabbedpane title="Manage Corpus" icon="images/icons8-binder.png"/>
             </constraints>
             <properties/>
             <border type="none"/>
@@ -225,7 +225,8 @@
                       <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
-                      <text value="&lt;html&gt;&lt;b&gt;Project Management&lt;/b&gt;&lt;/html&gt;"/>
+                      <font style="1"/>
+                      <text resource-bundle="MessagesBundle" key="project.management"/>
                     </properties>
                   </component>
                   <component id="d9a65" class="javax.swing.JLabel">
@@ -233,7 +234,8 @@
                       <grid row="4" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
-                      <text value="&lt;html&gt;&lt;b&gt;Corpus Management&lt;/b&gt;&lt;/html&gt;"/>
+                      <font style="1"/>
+                      <text resource-bundle="MessagesBundle" key="corpus.management"/>
                     </properties>
                   </component>
                   <component id="ee67" class="javax.swing.JLabel">
@@ -241,7 +243,8 @@
                       <grid row="10" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
-                      <text value="&lt;html&gt;&lt;b&gt;Options&lt;/b&gt;&lt;/html&gt;"/>
+                      <font style="1"/>
+                      <text resource-bundle="MessagesBundle" key="options"/>
                     </properties>
                   </component>
                   <component id="865d4" class="javax.swing.JLabel">
@@ -377,7 +380,7 @@
           <grid id="3ee10" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="0" bottom="0" right="0"/>
             <constraints>
-              <tabbedpane title="Process Corpus"/>
+              <tabbedpane title="Process Corpus" icon="images/icons8-refresh.png"/>
             </constraints>
             <properties>
               <enabled value="true"/>
@@ -414,28 +417,203 @@
                     <properties/>
                     <border type="none"/>
                     <children>
-                      <grid id="ef5c9" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                      <grid id="ef5c9" layout-manager="GridLayoutManager" row-count="3" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                         <margin top="0" left="0" bottom="0" right="0"/>
                         <constraints>
                           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties/>
-                        <border type="etched" title="Options"/>
+                        <border type="none"/>
                         <children>
-                          <component id="90416" class="javax.swing.JButton" binding="analyzeButton">
+                          <grid id="24c8a" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                            <margin top="0" left="0" bottom="0" right="0"/>
                             <constraints>
-                              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                              <grid row="1" column="0" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                             </constraints>
-                            <properties>
-                              <enabled value="false"/>
-                              <text value="Analyze Corpus"/>
-                            </properties>
-                          </component>
-                          <hspacer id="d65de">
+                            <properties/>
+                            <border type="etched" title="File Statistics"/>
+                            <children>
+                              <scrollpane id="761aa">
+                                <constraints>
+                                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                                </constraints>
+                                <properties/>
+                                <border type="none"/>
+                                <children>
+                                  <component id="4604e" class="javax.swing.JTable" binding="table1" default-binding="true">
+                                    <constraints/>
+                                    <properties/>
+                                  </component>
+                                </children>
+                              </scrollpane>
+                            </children>
+                          </grid>
+                          <grid id="e16a4" layout-manager="GridLayoutManager" row-count="2" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                            <margin top="0" left="0" bottom="0" right="0"/>
                             <constraints>
-                              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                             </constraints>
-                          </hspacer>
+                            <properties/>
+                            <border type="etched" title="Token List"/>
+                            <children>
+                              <scrollpane id="a055e">
+                                <constraints>
+                                  <grid row="0" column="0" row-span="1" col-span="4" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                                </constraints>
+                                <properties/>
+                                <border type="none"/>
+                                <children>
+                                  <component id="e5c02" class="javax.swing.JList" binding="list1" default-binding="true">
+                                    <constraints/>
+                                    <properties/>
+                                  </component>
+                                </children>
+                              </scrollpane>
+                              <component id="305f6" class="javax.swing.JTextField" binding="textField4" default-binding="true">
+                                <constraints>
+                                  <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                                    <preferred-size width="150" height="-1"/>
+                                  </grid>
+                                </constraints>
+                                <properties/>
+                              </component>
+                              <component id="599d0" class="javax.swing.JLabel">
+                                <constraints>
+                                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                                </constraints>
+                                <properties>
+                                  <text value="Search"/>
+                                </properties>
+                              </component>
+                              <component id="b62e5" class="javax.swing.JButton" binding="searchButton1" default-binding="true">
+                                <constraints>
+                                  <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                                </constraints>
+                                <properties>
+                                  <icon value="images/icons8-search-20.png"/>
+                                  <text value="Search"/>
+                                </properties>
+                              </component>
+                              <component id="2d9ad" class="javax.swing.JButton" binding="resetButton1" default-binding="true">
+                                <constraints>
+                                  <grid row="1" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                                </constraints>
+                                <properties>
+                                  <text value="Reset"/>
+                                </properties>
+                              </component>
+                            </children>
+                          </grid>
+                          <grid id="13401" layout-manager="GridLayoutManager" row-count="3" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                            <margin top="0" left="0" bottom="0" right="0"/>
+                            <constraints>
+                              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties/>
+                            <border type="etched" title="Collection or File Information"/>
+                            <children>
+                              <component id="844cf" class="javax.swing.JLabel">
+                                <constraints>
+                                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+                                </constraints>
+                                <properties>
+                                  <text value="Processing State:"/>
+                                </properties>
+                              </component>
+                              <component id="cd9f0" class="javax.swing.JLabel">
+                                <constraints>
+                                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+                                </constraints>
+                                <properties>
+                                  <text value="File Type:"/>
+                                </properties>
+                              </component>
+                              <component id="a737d" class="javax.swing.JLabel">
+                                <constraints>
+                                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+                                </constraints>
+                                <properties>
+                                  <text value="Language:"/>
+                                </properties>
+                              </component>
+                              <component id="18bc6" class="javax.swing.JLabel">
+                                <constraints>
+                                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                                </constraints>
+                                <properties>
+                                  <font style="1"/>
+                                  <text value="checked"/>
+                                </properties>
+                              </component>
+                              <component id="b0ba0" class="javax.swing.JLabel">
+                                <constraints>
+                                  <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                                </constraints>
+                                <properties>
+                                  <text value="filetypeName"/>
+                                </properties>
+                              </component>
+                              <component id="d5ff" class="javax.swing.JLabel">
+                                <constraints>
+                                  <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                                </constraints>
+                                <properties>
+                                  <text value="LanguageName"/>
+                                </properties>
+                              </component>
+                            </children>
+                          </grid>
+                          <grid id="46ae0" layout-manager="GridLayoutManager" row-count="2" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                            <margin top="0" left="0" bottom="0" right="0"/>
+                            <constraints>
+                              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties/>
+                            <border type="etched" title="Options"/>
+                            <children>
+                              <component id="90416" class="javax.swing.JButton" binding="analyzeButton">
+                                <constraints>
+                                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                                </constraints>
+                                <properties>
+                                  <enabled value="true"/>
+                                  <horizontalAlignment value="2"/>
+                                  <icon value="images/icons8-additional.png"/>
+                                  <text value="Analyze Corpus"/>
+                                </properties>
+                              </component>
+                              <hspacer id="90c3f">
+                                <constraints>
+                                  <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                                </constraints>
+                              </hspacer>
+                              <vspacer id="2839a">
+                                <constraints>
+                                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+                                </constraints>
+                              </vspacer>
+                              <component id="1a119" class="javax.swing.JButton" binding="exportStatisticsButton" default-binding="true">
+                                <constraints>
+                                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                                </constraints>
+                                <properties>
+                                  <horizontalAlignment value="2"/>
+                                  <icon value="images/icons8-send-file.png"/>
+                                  <text value="Export Statistics"/>
+                                </properties>
+                              </component>
+                              <component id="93ad2" class="javax.swing.JButton" binding="exportTokenListButton" default-binding="true">
+                                <constraints>
+                                  <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                                </constraints>
+                                <properties>
+                                  <horizontalAlignment value="2"/>
+                                  <icon value="images/icons8-send-file.png"/>
+                                  <text value="Export Token List"/>
+                                </properties>
+                              </component>
+                            </children>
+                          </grid>
                         </children>
                       </grid>
                       <vspacer id="60e5a">
@@ -452,7 +630,7 @@
           <grid id="55d2f" layout-manager="GridLayoutManager" row-count="4" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="0" bottom="0" right="0"/>
             <constraints>
-              <tabbedpane title="Search Corpus"/>
+              <tabbedpane title="Search Corpus" icon="images/icons8-search-20.png"/>
             </constraints>
             <properties>
               <enabled value="true"/>
@@ -669,7 +847,7 @@
           <grid id="8270e" layout-manager="GridLayoutManager" row-count="2" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="0" bottom="0" right="0"/>
             <constraints>
-              <tabbedpane title="Corpus Statistics"/>
+              <tabbedpane title="Corpus Statistics" icon="images/icons8-pie-chart.png"/>
             </constraints>
             <properties/>
             <border type="none"/>
