@@ -9,10 +9,17 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
-import java.awt.event.ActionEvent;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.TreeCellRenderer;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Path;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 public class ProjectTreeComponent {
     static final String PROJECT_FILE_ENDING = "xml"; //NON-NLS
@@ -25,12 +32,15 @@ public class ProjectTreeComponent {
     private CorpusFileDialog corpusFileDialog;
     private AuthorDialog authorDialog;
 
+    private AuthorManager authorManager;
+    private LexiconManager lexiconManager;
+    private LanguageManagerDialog languageManager;
+
     private final JFileChooser fileChooser = new JFileChooser();
     private final FileNameExtensionFilter projectFileFilter = new FileNameExtensionFilter("Project files", PROJECT_FILE_ENDING);
     final FileNameExtensionFilter lemmaFileFilter = new FileNameExtensionFilter("Lexicon", LEXICON_FILE_ENDING);
     final FileNameExtensionFilter textFileFilter = new FileNameExtensionFilter("Text files", TEXT_FILE_ENDING);
     final FileFilter folderFileFilter = new FileFilter() {
-
         @Override
         public String getDescription() {
             return "Directories";
@@ -42,6 +52,9 @@ public class ProjectTreeComponent {
         }
     };
 
+    final Comparator<CorpusCollection> CORPUS_COMP = Comparator.comparing(CorpusCollection::getName);
+    final Comparator<CorpusFile> FILES_COMP = Comparator.comparing(CorpusFile::getName);
+
     private JButton newCollectionButton;
     private JButton newFileButton;
     private JButton filesFromDirectoryButton;
@@ -52,7 +65,6 @@ public class ProjectTreeComponent {
     private JButton loadProjectButton;
     private JTree analyzeFilesTree;
     private JButton analyzeButton;
-    private JTextArea textAreaInformation;
     private JTextField textField1;
     private JButton searchButton;
     private JButton resetButton;
@@ -87,8 +99,8 @@ public class ProjectTreeComponent {
     private JButton exportStatisticsButton;
     private JButton exportTokenListButton;
     private JTextField textField4;
-    private JButton searchButton1;
-    private JButton resetButton1;
+    private JButton tokenListSearchButton;
+    private JButton tokenListResetButton;
     private JButton enableEditingButton;
     private JButton disableEditingButton;
     private JTextField textField5;
@@ -122,6 +134,18 @@ public class ProjectTreeComponent {
         authorDialog.pack();
         authorDialog.setLocationRelativeTo( contentPane );
 
+        authorManager = new AuthorManager();
+        authorManager.pack();
+        authorManager.setLocationRelativeTo( contentPane );
+
+        languageManager = new LanguageManagerDialog();
+        languageManager.pack();
+        languageManager.setLocationRelativeTo( contentPane );
+
+        lexiconManager = new LexiconManager();
+        lexiconManager.pack();
+        lexiconManager.setLocationRelativeTo( contentPane );
+
         // HELP PAGE INITIALIZATION
         helpEditorPanel.setEditable(false);
         HTMLEditorKit kit = new HTMLEditorKit();
@@ -132,6 +156,10 @@ public class ProjectTreeComponent {
         styleSheet.addRule("h2 {font-size:10px; color:#0B6121;}");
         setHelpPage( 0 );
 
+        // INITIALIZE UI
+        setButtons();
+
+
         // NEW PROJECT
         createProjectButton.addActionListener(e ->  {
             if(DataPool.projectOpen() && modified) {
@@ -141,8 +169,7 @@ public class ProjectTreeComponent {
                 }
             }
             DataPool.createProject();
-            setData(DataPool.project);
-            newCollectionButton.setEnabled( true );
+            fireProjectOpened();
             fireProjectChanged();
         });
 
@@ -223,6 +250,51 @@ public class ProjectTreeComponent {
                 }
             }
         });
+        filesFromDirectoryButton.addActionListener(e-> {
+            Object selected = projectTree.getSelectionPath().getLastPathComponent();
+            if(selected instanceof CorpusCollection) {
+                File file = showOpenDialog("Add Corpus Text Files from Folder", "No files selected", folderFileFilter, true);
+                if(file != null) {
+                    if( !FileUtils.fileExists( file ) ) {
+                        showMessage("The selected folder does not exist or is not readable.");
+                    }
+                    else if(!file.isDirectory()) {
+                        showMessage("The selected file is not a directory.");
+                    }
+                    else {
+                        List<Path> filesToOpen = FileUtils.collectFilenames( file.getAbsolutePath() );
+                        if(filesToOpen.size()>0) {
+                            int addedFiles = 0;
+                            int ignoredFiles = 0;
+                            CorpusFile corpusFile = null;
+                            String str = "<html>Nicht hinzugefügt:<br/>";
+                            for(Path p : filesToOpen) {
+                                if( !FileUtils.fileExists( p ) ) {
+                                    str += p.getFileName().toString() + " existiert nicht.<br/>";
+                                    ignoredFiles++;
+                                }
+                                else if( FileUtils.fileExistsInProjectList( DataPool.project, p ) ) {
+                                    str += p.getFileName().toString() + " ist bereits im Projekt.<br/>";
+                                    ignoredFiles++;
+                                }
+                                else {
+                                    addedFiles++;
+                                    corpusFile = projectTreeModel.addFile( ((CorpusCollection)selected), new File(p.toAbsolutePath().toString()));
+                                }
+                            }
+                            if(addedFiles>0) {
+                                projectTree.setSelectionPath( projectTreeModel.getPathToRoot(corpusFile) );
+                                fireProjectChanged();
+                            }
+                            if(ignoredFiles>0) {
+                                str += "Es wurden "+ignoredFiles+" Dateien übersprungen und "+addedFiles+" Dateien hinzugefügt.";
+                                showMessage( str );
+                            }
+                        }
+                    }
+                }
+            }
+        });
 
         deleteFileButton.addActionListener( e -> {
             int answer = JOptionPane.showConfirmDialog(contentPane, "Really remove file?");
@@ -240,36 +312,38 @@ public class ProjectTreeComponent {
 
         projectTree.setModel( projectTreeModel );
         projectTree.addTreeSelectionListener(e -> {
-            if(e.getPath().getLastPathComponent() instanceof Corpus) {
-                textAreaInformation.setText( "This entry represents the corpus you are working with. It contains collections of files." );
-                enableFileButtons(false);
-                enableSortButtons(false, true);
-                deleteCollectionButton.setEnabled(false);
-                editEntryButton.setEnabled(true);
+            setButtons();
+        });
+        projectTree.setCellRenderer(new TreeCellRenderer() {
+            @Override
+            public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+                DefaultTreeCellRenderer defaultTreeCellRenderer = new DefaultTreeCellRenderer();
+                JLabel label = (JLabel)defaultTreeCellRenderer.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
+                if(value instanceof Corpus) {
+                    label.setIcon( getImageIcon("icons8-copyright.png"));
+                }
+                else if(value instanceof CorpusCollection) {
+                    label.setIcon( getImageIcon("icons8-binder.png"));
+                }
+                else if(value instanceof CorpusFile) {
+                    label.setIcon( getImageIcon("icons8-file.png"));
+                }
+                return label;
             }
-            else if(e.getPath().getLastPathComponent() instanceof CorpusCollection) {
-                textAreaInformation.setText( "This entry represents a collection of files. You can add files one by one or select a directory to add all files from. Only text files ending in .txt are processed." );
-                enableFileButtons(true);
-                enableSortButtons(true, true);
-                deleteCollectionButton.setEnabled(true);
-                editEntryButton.setEnabled(true);
-            }
-            else if(e.getPath().getLastPathComponent() instanceof CorpusFile) {
-                textAreaInformation.setText( "This entry represents a corpus file. You can delete it or edit its meta data." );
-                enableFileButtons(false);
-                enableSortButtons(true, false);
-                deleteCollectionButton.setEnabled(false);
-                deleteFileButton.setEnabled(true);
-                editEntryButton.setEnabled(true);
-            }
-            else {
-                editEntryButton.setEnabled(false);
+
+            private Icon getImageIcon(String iconName) {
+                URL theURL = MainClass.class.getClassLoader().getResource("../resources/images/"+iconName);
+                ImageIcon icon = new ImageIcon(theURL);
+                Image img = icon.getImage();
+                Image newImg = img.getScaledInstance(16,16, Image.SCALE_SMOOTH);
+                icon = new ImageIcon(newImg);
+                return icon;
             }
         });
 
         analyzeFilesTree.setModel( analyzeTreeModel );
         analyzeFilesTree.addTreeSelectionListener(e -> {
-            analyzeButton.setEnabled( true );
+            setButtons();
             if(e.getPath().getLastPathComponent() instanceof Corpus) {
                 analyzeButton.setText("Analyze Corpus");
             }
@@ -289,61 +363,142 @@ public class ProjectTreeComponent {
                 corpusDialog.setCorpus( (Corpus)selected );
                 corpusDialog.setVisible(true);
                 if(corpusDialog.getCloseAction()==CorpusDialog.OK) {
-                    fireProjectChanged();
                     analyzeTreeModel.rootChanged();
                     projectTreeModel.rootChanged();
                     projectTree.setSelectionPath( projectTreeModel.getPathToRoot(selected) );
+                    fireProjectChanged();
                 }
             }
             else if(selected instanceof CorpusCollection) {
                 collectionDialog.setCorpusCollection( (CorpusCollection)selected );
                 collectionDialog.setVisible(true);
                 if(collectionDialog.getCloseAction()==CollectionDialog.OK) {
-                    fireProjectChanged();
                     analyzeTreeModel.rootChanged();
                     projectTreeModel.rootChanged();
                     projectTree.setSelectionPath( projectTreeModel.getPathToRoot(selected) );
+                    fireProjectChanged();
                 }
             }
             else if(selected instanceof CorpusFile) {
                 corpusFileDialog.setFile((CorpusFile)selected);
                 corpusFileDialog.setVisible(true);
                 if(corpusFileDialog.getCloseAction()==CorpusFileDialog.OK) {
-                    fireProjectChanged();
                     analyzeTreeModel.rootChanged();
                     projectTreeModel.rootChanged();
                     projectTree.setSelectionPath( projectTreeModel.getPathToRoot(selected) );
+                    fireProjectChanged();
                 }
             }
         });
 
+        setUpOptionsButtons();
+        setUpHelpButtons();
+        setUpSortingButtons();
 
         projectTabbedPane.addChangeListener(e -> {
             int idx = projectTabbedPane.getSelectedIndex();
             setHelpPage( idx );
 
         });
-        authorsButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                /*
-                Author author = file.getAuthor();
-                if(author==null) {
-                    author = new Author("Select a name");
+    }
+
+    private void setUpOptionsButtons() {
+        lexiconsButton.addActionListener(e->{
+            lexiconManager.setVisible(true);
+        });
+        authorsButton.addActionListener(e->{
+            authorManager.setVisible(true);
+        });
+        languagesButton.addActionListener(e->{
+            languageManager.init();
+            languageManager.setVisible(true);
+        });
+
+    }
+
+    /**
+     * Adds {@link ActionListener} to help buttons.
+     */
+    private void setUpHelpButtons() {
+        // MORE HELP
+        moreHelpButton.addActionListener(e -> showMessage("Extended help is not implemented yet."));
+        // ABOUT
+        aboutButton.addActionListener(e -> aboutDialog.setVisible(true));
+    }
+
+    /**
+     * Adds {@link ActionListener} to sort buttons.
+     */
+    private void setUpSortingButtons() {
+        // UP
+        UPButton.addActionListener(e -> {
+            if(projectTree.getSelectionPath()!=null) {
+                Object selectedComponent = projectTree.getSelectionPath().getLastPathComponent();
+                if(selectedComponent instanceof CorpusCollection) {
+                    int index = projectTreeModel.getIndexOfChild(DataPool.getCorpus(), selectedComponent);
+                    Collections.swap(DataPool.getCorpus().getCollections(), index, (index-1));
+                    projectTreeModel.rootChanged();
+                    projectTree.setSelectionPath( projectTreeModel.getPathToRoot( selectedComponent ));
                 }
-                authorDialog.setAuthor( author );
-                authorDialog.setVisible(true);
-                if(authorDialog.getCloseAction()==AuthorDialog.OK) {
-                    //TODO
+                else if(selectedComponent instanceof CorpusFile) {
+                    CorpusCollection collection = projectTreeModel.getCollectionByFile((CorpusFile) selectedComponent);
+                    int index = collection.getFiles().indexOf(selectedComponent);
+                    Collections.swap(collection.getFiles(), index, (index-1));
+                    projectTreeModel.rootChanged();
+                    projectTree.setSelectionPath( projectTreeModel.getPathToRoot( selectedComponent ));
                 }
-                */
             }
         });
-        // ABOUT
-        aboutButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                aboutDialog.setVisible(true);
+        // DOWN
+        DOWNButton.addActionListener(e -> {
+            if(projectTree.getSelectionPath()!=null) {
+                Object selectedComponent = projectTree.getSelectionPath().getLastPathComponent();
+                if(selectedComponent instanceof CorpusCollection) {
+                    int index = projectTreeModel.getIndexOfChild(DataPool.getCorpus(), selectedComponent);
+                    Collections.swap(DataPool.getCorpus().getCollections(), index, (index+1));
+                    projectTreeModel.rootChanged();
+                    projectTree.setSelectionPath( projectTreeModel.getPathToRoot( selectedComponent ));
+                }
+                else if(selectedComponent instanceof CorpusFile) {
+                    CorpusCollection collection = projectTreeModel.getCollectionByFile((CorpusFile) selectedComponent);
+                    int index = collection.getFiles().indexOf(selectedComponent);
+                    Collections.swap(collection.getFiles(), index, (index+1));
+                    projectTreeModel.rootChanged();
+                    projectTree.setSelectionPath( projectTreeModel.getPathToRoot( selectedComponent ));
+                }
+            }
+
+        });
+        // ASC
+        ABCButton.addActionListener(e -> {
+            if(projectTree.getSelectionPath()!=null) {
+                Object selectedComponent = projectTree.getSelectionPath().getLastPathComponent();
+                if(selectedComponent instanceof Corpus) {
+                    Collections.sort(DataPool.getCorpus().getCollections(), CORPUS_COMP );
+                    projectTreeModel.rootChanged();
+                    projectTree.setSelectionPath( projectTreeModel.getPathToRoot( selectedComponent ));
+                }
+                else if(selectedComponent instanceof CorpusCollection) {
+                    Collections.sort(((CorpusCollection)selectedComponent).getFiles(), FILES_COMP );
+                    projectTreeModel.rootChanged();
+                    projectTree.setSelectionPath( projectTreeModel.getPathToRoot( selectedComponent ));
+                }
+            }
+        });
+        // DESC
+        ZYXButton.addActionListener(e -> {
+            if(projectTree.getSelectionPath()!=null) {
+                Object selectedComponent = projectTree.getSelectionPath().getLastPathComponent();
+                if(selectedComponent instanceof Corpus) {
+                    Collections.sort(DataPool.getCorpus().getCollections(), CORPUS_COMP.reversed() );
+                    projectTreeModel.rootChanged();
+                    projectTree.setSelectionPath( projectTreeModel.getPathToRoot( selectedComponent ));
+                }
+                else if(selectedComponent instanceof CorpusCollection) {
+                    Collections.sort(((CorpusCollection)selectedComponent).getFiles(), FILES_COMP.reversed() );
+                    projectTreeModel.rootChanged();
+                    projectTree.setSelectionPath( projectTreeModel.getPathToRoot( selectedComponent ));
+                }
             }
         });
     }
@@ -376,52 +531,25 @@ public class ProjectTreeComponent {
         }
     }
 
-    private void enableSortButtons(boolean updown, boolean abcxyz) {
-        UPButton.setEnabled( updown );
-        DOWNButton.setEnabled( updown );
-        ABCButton.setEnabled( abcxyz );
-        ZYXButton.setEnabled( abcxyz );
-    }
-
-    private void enableFileButtons(boolean enable) {
-        newFileButton.setEnabled(enable);
-        filesFromDirectoryButton.setEnabled(enable);
-        deleteFileButton.setEnabled(enable);
-    }
-
-    public void setData(Project data) {
-        projectTreeModel.rootChanged();
-        analyzeTreeModel.rootChanged();
-        projectTree.setSelectionPath(projectTreeModel.getPathToRoot(DataPool.project.getCorpus()));
-        modified = false;
-    }
-
-    public void getData(Project data) {
-        System.out.println("get Data?");
-    }
-
-    public boolean isModified(Project data) {
-        System.out.println("Is modified?");
-        return modified;
-    }
-
     private void fireProjectChanged() {
         modified = true;
-        saveProjectButton.setEnabled(true);
         MainClass.setWindowTitle(modified);
+        setButtons();
     }
 
     private void fireProjectSaved() {
         modified = false;
-        saveProjectButton.setEnabled(false);
         MainClass.setWindowTitle(modified);
+        setButtons();
     }
 
     private void fireProjectOpened() {
-       saveProjectButton.setEnabled( true );
-       modified = false;
-       setData( DataPool.project );
-       MainClass.setWindowTitle(modified);
+        modified = false;
+        projectTreeModel.rootChanged();
+        analyzeTreeModel.rootChanged();
+        projectTree.setSelectionPath(projectTreeModel.getPathToRoot(DataPool.project.getCorpus()));
+        MainClass.setWindowTitle(modified);
+        setButtons();
     }
 
     /**
@@ -468,5 +596,148 @@ public class ProjectTreeComponent {
 
     private void showMessage(String message) {
         JOptionPane.showMessageDialog(contentPane, message);
+    }
+
+    private void setButtons() {
+        // Always enabled
+        createProjectButton.setEnabled( true );
+        loadProjectButton.setEnabled(true);
+        aboutButton.setEnabled(true);
+        moreHelpButton.setEnabled(true);
+
+        if(DataPool.projectOpen()) {
+            saveProjectButton.setEnabled(true);
+            copyTextFilesButton.setEnabled(true);
+
+            lexiconsButton.setEnabled(true);
+            authorsButton.setEnabled(true);
+            languagesButton.setEnabled(true);
+
+            Object projectTreeSelected = null;
+            if(projectTree.getSelectionPath()!=null) {
+                projectTreeSelected = projectTree.getSelectionPath().getLastPathComponent();
+            }
+            if(projectTreeSelected instanceof Corpus) {
+                newCollectionButton.setEnabled(true);
+                deleteCollectionButton.setEnabled(false);
+                newFileButton.setEnabled(false);
+                filesFromDirectoryButton.setEnabled(false);
+                editEntryButton.setEnabled(true);
+                deleteFileButton.setEnabled(false);
+
+                if(DataPool.getCorpus().getNumCollections()>1) {
+                    ABCButton.setEnabled(true);
+                    ZYXButton.setEnabled(true);
+                }
+                else {
+                    ABCButton.setEnabled(false);
+                    ZYXButton.setEnabled(false);
+                }
+
+                UPButton.setEnabled(false);
+                DOWNButton.setEnabled(false);
+            }
+            else if(projectTreeSelected instanceof CorpusCollection) {
+                newCollectionButton.setEnabled(false);
+                deleteCollectionButton.setEnabled(true);
+                newFileButton.setEnabled(true);
+                filesFromDirectoryButton.setEnabled(true);
+                editEntryButton.setEnabled(true);
+                deleteFileButton.setEnabled(false);
+
+                if(((CorpusCollection)projectTreeSelected).getNumFiles()>1) {
+                    ABCButton.setEnabled(true);
+                    ZYXButton.setEnabled(true);
+                }
+                else {
+                    ABCButton.setEnabled(false);
+                    ZYXButton.setEnabled(false);
+                }
+
+                int idxOfCollection = projectTreeModel.getIndexOfChild(DataPool.getCorpus(), projectTreeSelected);
+                if(idxOfCollection>0) {
+                    UPButton.setEnabled(true);
+                }
+                else {
+                    UPButton.setEnabled(false);
+                }
+
+                if(idxOfCollection<(DataPool.getCorpus().getNumCollections()-1)) {
+                    DOWNButton.setEnabled(true);
+                }
+                else {
+                    DOWNButton.setEnabled(false);
+                }
+
+            }
+            else if(projectTreeSelected instanceof CorpusFile) {
+                newCollectionButton.setEnabled(false);
+                deleteCollectionButton.setEnabled(false);
+                newFileButton.setEnabled(false);
+                filesFromDirectoryButton.setEnabled(false);
+                editEntryButton.setEnabled(true);
+                ABCButton.setEnabled(false);
+                ZYXButton.setEnabled(false);
+                deleteFileButton.setEnabled(true);
+
+                CorpusCollection collection = projectTreeModel.getCollectionByFile((CorpusFile) projectTreeSelected);
+
+                if(collection.getFiles().indexOf(projectTreeSelected)<=0) {
+                    UPButton.setEnabled(false);
+                }
+                else {
+                    UPButton.setEnabled(true);
+                }
+
+                if(collection.getFiles().indexOf(projectTreeSelected)==collection.getFiles().size()-1) {
+                    DOWNButton.setEnabled(false);
+                }
+                else {
+                    DOWNButton.setEnabled(true);
+                }
+
+
+            }
+            else {
+                newCollectionButton.setEnabled(false);
+                deleteCollectionButton.setEnabled(false);
+                newFileButton.setEnabled(false);
+                filesFromDirectoryButton.setEnabled(false);
+                deleteFileButton.setEnabled(false);
+                editEntryButton.setEnabled(false);
+                ABCButton.setEnabled(false);
+                ZYXButton.setEnabled(false);
+                UPButton.setEnabled(false);
+                DOWNButton.setEnabled(false);
+            }
+
+        }
+        else {  // PROJECT IS CLOSED
+            saveProjectButton.setEnabled(false);
+            newCollectionButton.setEnabled(false);
+            deleteCollectionButton.setEnabled(false);
+            newFileButton.setEnabled(false);
+            filesFromDirectoryButton.setEnabled(false);
+            deleteFileButton.setEnabled(false);
+            editEntryButton.setEnabled(false);
+            copyTextFilesButton.setEnabled(false);
+            lexiconsButton.setEnabled(false);
+            authorsButton.setEnabled(false);
+            languagesButton.setEnabled(false);
+
+            UPButton.setEnabled(false);
+            DOWNButton.setEnabled(false);
+            ABCButton.setEnabled(false);
+            ZYXButton.setEnabled(false);
+
+            analyzeButton.setEnabled(false);
+            exportStatisticsButton.setEnabled(false);
+            exportTokenListButton.setEnabled(false);
+            tokenListSearchButton.setEnabled(false);
+            tokenListResetButton.setEnabled(false);
+            enableEditingButton.setEnabled(false);
+            disableEditingButton.setEnabled(false);
+
+        }
     }
 }

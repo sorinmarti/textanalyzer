@@ -1,27 +1,25 @@
 package com.sm.textanalyzer.gui;
 
+import com.sm.textanalyzer.DataPool;
+import com.sm.textanalyzer.app.Language;
+
 import javax.swing.*;
 import java.awt.event.*;
 
 public class LanguageManagerDialog extends JDialog {
     private JPanel contentPane;
-    private JButton buttonOK;
     private JButton buttonCancel;
-    private JComboBox comboBox1;
-    private JTextField textField1;
+    private JComboBox comboBoxLanguage;
+    private JTextField textFieldLanguageName;
     private JButton addButton;
     private JButton deleteSelectedLanguageButton;
+    private DefaultComboBoxModel<Language> model = new DefaultComboBoxModel<Language>();
 
     public LanguageManagerDialog() {
         setContentPane(contentPane);
         setModal(true);
-        getRootPane().setDefaultButton(buttonOK);
-
-        buttonOK.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onOK();
-            }
-        });
+        setTitle("Manage Languages");
+        getRootPane().setDefaultButton(buttonCancel);
 
         buttonCancel.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -43,22 +41,43 @@ public class LanguageManagerDialog extends JDialog {
                 onCancel();
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+
+        init();
+        comboBoxLanguage.setRenderer((ListCellRenderer<Language>) (list, value, index, isSelected, cellHasFocus) -> {
+            DefaultListCellRenderer defaultListCellRenderer = new DefaultListCellRenderer();
+            JLabel label = (JLabel) defaultListCellRenderer.getListCellRendererComponent(list,value,index,isSelected,cellHasFocus);
+            label.setText(value.getName());
+            return label;
+        });
+
+        addButton.addActionListener(e-> {
+            if(!textFieldLanguageName.getText().isEmpty()) {
+                Language lang = new Language(textFieldLanguageName.getText());
+                DataPool.getLanguages().add(lang);
+                model.addElement(lang);
+                textFieldLanguageName.setText("");
+            }
+        });
+
+        deleteSelectedLanguageButton.addActionListener(e -> {
+            int answer = JOptionPane.showConfirmDialog(LanguageManagerDialog.this, "Really delete language?");
+            if(answer==JOptionPane.YES_OPTION) {
+                DataPool.getLanguages().remove(comboBoxLanguage.getSelectedItem());
+                model.removeElement(comboBoxLanguage.getSelectedItem());
+            }
+        });
     }
 
-    private void onOK() {
-        // add your code here
-        dispose();
+    public void init() {
+        model = new DefaultComboBoxModel<>();
+        for(Language lang : DataPool.getLanguages()) {
+            model.addElement(lang);
+        }
+        comboBoxLanguage.setModel(model);
+
     }
 
     private void onCancel() {
-        // add your code here if necessary
         dispose();
-    }
-
-    public static void main(String[] args) {
-        LanguageManagerDialog dialog = new LanguageManagerDialog();
-        dialog.pack();
-        dialog.setVisible(true);
-        System.exit(0);
     }
 }

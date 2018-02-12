@@ -154,5 +154,14 @@ public class ProjectTreeModel implements TreeModel{
     }
 
 
-
+    public CorpusCollection getCollectionByFile(CorpusFile file) {
+        if(DataPool.projectOpen()) {
+            for(CorpusCollection col : DataPool.getCorpus().getCollections()) {
+                if(col.getFiles().indexOf(file)>=0) {
+                    return col;
+                }
+            }
+        }
+        return null;
+    }
 }

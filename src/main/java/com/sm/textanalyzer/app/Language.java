@@ -4,7 +4,7 @@ public class Language {
 
     private String name;
 
-    Language(String name) {
+    public Language(String name) {
         this.name = name;
     }
 
